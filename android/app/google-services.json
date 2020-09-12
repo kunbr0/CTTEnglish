@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "606033635296",
+    "firebase_url": "https://kunbr0-kgram.firebaseio.com",
+    "project_id": "kunbr0-kgram",
+    "storage_bucket": "kunbr0-kgram.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606033635296:android:31345553a9941b623a6d85",
+        "android_client_info": {
+          "package_name": "com.kunbr0.cttenglish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606033635296-gr6c0c6lc344327llh3akk6v4dr86tr5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtfPoiv5h-edigIt-lcJFYVa1-YzP7D4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606033635296-gr6c0c6lc344327llh3akk6v4dr86tr5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "606033635296-qs1583ebmh9r0909lplgf9lackpomoau.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kunbr0.ttenglish"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
