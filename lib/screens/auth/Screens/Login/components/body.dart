@@ -5,12 +5,24 @@ import 'package:cttenglish/screens/auth/components/already_have_an_account_achec
 import 'package:cttenglish/screens/auth/components/rounded_button.dart';
 import 'package:cttenglish/screens/auth/components/rounded_input_field.dart';
 import 'package:cttenglish/screens/auth/components/rounded_password_field.dart';
+import 'package:cttenglish/services/auth.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 
-class Body extends StatelessWidget {
-  const Body({
-    Key key,
-  }) : super(key: key);
+class Body extends StatefulWidget {
+  @override
+  _BodyState createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  final AuthService _auth = AuthService();
+  final _formKey = GlobalKey<FormState>();
+  String error = '';
+  bool loading = false;
+
+  // text field state
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +44,29 @@ class Body extends StatelessWidget {
             SizedBox(height: size.height * 0.03),
             RoundedInputField(
               hintText: "Your Email",
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() => email = value);
+              },
             ),
             RoundedPasswordField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() => password = value);
+              },
             ),
             RoundedButton(
               text: "LOGIN",
-              press: () {},
+              press: () async {      
+                setState(() => loading = true);
+                dynamic result = await _auth
+                    .signInWithEmailAndPassword(email, password);
+                if (result == null) {
+                  setState(() {
+                    loading = false;
+                    error =
+                        'Could not sign in with those credentials';
+                  });
+                }
+              }
             ),
             SizedBox(height: size.height * 0.03),
             AlreadyHaveAnAccountCheck(
@@ -60,3 +87,4 @@ class Body extends StatelessWidget {
     );
   }
 }
+
