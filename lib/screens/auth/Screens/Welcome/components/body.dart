@@ -6,9 +6,14 @@ import 'package:cttenglish/screens/auth/components/rounded_button.dart';
 import 'package:cttenglish/screens/auth/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   @override
+  _BodyState createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+
+
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     // This size provide us total height and width of our screen

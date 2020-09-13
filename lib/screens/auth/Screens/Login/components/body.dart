@@ -15,6 +15,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String error = '';
@@ -54,20 +55,18 @@ class _BodyState extends State<Body> {
               },
             ),
             RoundedButton(
-              text: "LOGIN",
-              press: () async {      
-                setState(() => loading = true);
-                dynamic result = await _auth
-                    .signInWithEmailAndPassword(email, password);
-                if (result == null) {
-                  setState(() {
-                    loading = false;
-                    error =
-                        'Could not sign in with those credentials';
-                  });
-                }
-              }
-            ),
+                text: "LOGIN",
+                press: () async {
+                  setState(() => loading = true);
+                  dynamic result =
+                      await _auth.signInWithEmailAndPassword(email, password);
+                  if (result == null) {
+                    setState(() {
+                      loading = false;
+                      error = 'Could not sign in with those credentials';
+                    });
+                  }
+                }),
             SizedBox(height: size.height * 0.03),
             AlreadyHaveAnAccountCheck(
               press: () {
@@ -87,4 +86,3 @@ class _BodyState extends State<Body> {
     );
   }
 }
-
