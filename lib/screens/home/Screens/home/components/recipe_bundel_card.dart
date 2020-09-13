@@ -48,14 +48,14 @@ class RecipeBundelCard extends StatelessWidget {
                     Spacer(),
                     buildInfoRow(
                       defaultSize,
-                      iconSrc: "assets/icons/pot.svg",
-                      text: "${recipeBundle.recipes} Recipes",
+                      iconSrc: "assets/icons/chef.svg",
+                      text: "${recipeBundle.recipes} Articles",
                     ),
                     SizedBox(height: defaultSize * 0.5), //5
                     buildInfoRow(
                       defaultSize,
                       iconSrc: "assets/icons/chef.svg",
-                      text: "${recipeBundle.chefs} Chefs",
+                      text: "${recipeBundle.chefs} Audio",
                     ),
                     Spacer(),
                   ],
@@ -63,13 +63,21 @@ class RecipeBundelCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: defaultSize * 0.5), //5
+            
             AspectRatio(
               aspectRatio: 0.71,
-              child: Image.asset(
-                recipeBundle.imageSrc,
-                fit: BoxFit.cover,
-                alignment: Alignment.centerLeft,
-              ),
+              
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(
+                    recipeBundle.imageSrc,
+                    fit: BoxFit.fill,
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+              )
             )
           ],
         ),

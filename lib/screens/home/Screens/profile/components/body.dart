@@ -12,24 +12,24 @@ class Body extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Info(
-            image: "assets/images/pic.png",
-            name: "Jhon Doe",
-            email: "Jhondoe01@gmail.com",
+            image: "assets/images/tangkhanhchuong_ava.jpg",
+            name: "Tang Khanh Chuong",
+            email: "chuongtangkhanh@gmail.com",
           ),
           SizedBox(height: SizeConfig.defaultSize * 2), //20
           ProfileMenuItem(
             iconSrc: "assets/icons/bookmark_fill.svg",
-            title: "Saved Recipes",
+            title: "Saved words",
             press: () {},
           ),
           ProfileMenuItem(
             iconSrc: "assets/icons/chef_color.svg",
-            title: "Super Plan",
+            title: "Achivements",
             press: () {},
           ),
           ProfileMenuItem(
             iconSrc: "assets/icons/language.svg",
-            title: "Change Language",
+            title: "Translator",
             press: () {},
           ),
           ProfileMenuItem(

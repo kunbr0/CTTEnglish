@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cttenglish/screens/home/Screens/home/components/body.dart';
 import 'package:cttenglish/size_config.dart';
+import 'package:cttenglish/constants.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -24,7 +25,20 @@ class HomeScreen extends StatelessWidget {
       ),
       // On Android by default its false
       centerTitle: true,
-      title: Image.asset("assets/images/logo.png"),
+      //title: Image.asset("assets/images/logo.png"),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset("assets/images/logo.svg", width: 40),
+          SizedBox(width: 10),
+          Text(
+            'CTT English', style: 
+            TextStyle(
+              color: kTextColor
+            ),
+          )
+        ],
+      ),
       actions: <Widget>[
         IconButton(
           icon: SvgPicture.asset("assets/icons/search.svg"),
