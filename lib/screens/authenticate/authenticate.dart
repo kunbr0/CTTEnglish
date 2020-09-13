@@ -26,8 +26,8 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:cttenglish/screens/auth/Screens/Welcome/welcome_screen.dart';
-import 'package:cttenglish/screens/auth/constants.dart';
+import 'package:cttenglish/screens/authenticate/Screens/Welcome/welcome_screen.dart';
+import 'package:cttenglish/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Authenticate extends StatefulWidget {

@@ -1,58 +1,60 @@
-import 'package:cttenglish/models/brew.dart';
-import 'package:cttenglish/screens/home/brew_list.dart';
-import 'package:cttenglish/screens/home/settings_form.dart';
-import 'package:cttenglish/services/auth.dart';
-import 'package:cttenglish/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cttenglish/models/NavItem.dart';
+import 'package:cttenglish/components/my_bottom_nav_bar.dart';
 
-class Home extends StatelessWidget {
+import 'package:cttenglish/models/NavItem.dart';
 
-  final AuthService _auth = AuthService();
+
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
+
+  final NavItems navItems = new NavItems();
+  List<Widget> _screens = [];
 
   @override
+  void initState() {
+    super.initState();
+    _screens = navItems.items.map((e) {
+      return e.destination;
+    }).toList();
+  }
+
+ 
+  // This widget is the root of your application.
+  @override
   Widget build(BuildContext context) {
-
-    void _showSettingsPanel() {
-      showModalBottomSheet(context: context, builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
-          child: SettingsForm(),
-        );
-      });
-    }
-
-    return StreamProvider<List<Brew>>.value(
-      value: DatabaseService().brews,
-      child: Scaffold(
-        backgroundColor: Colors.brown[50],
-        appBar: AppBar(
-          title: Text('English'),
-          backgroundColor: Colors.brown[400],
-          elevation: 0.0,
-          actions: <Widget>[
-            FlatButton.icon(
-              icon: Icon(Icons.person),
-              label: Text('logout'),
-              onPressed: () async {
-                await _auth.signOut();
-              },
-            ),
-            FlatButton.icon(
-              icon: Icon(Icons.settings),
-              label: Text('settings'),
-              onPressed: () => _showSettingsPanel(),
-            )
-          ],
+    debugPrint(_selectedIndex.toString());
+    return ChangeNotifierProvider(
+      create: (context) => NavItems(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Recipe App',
+        theme: ThemeData(
+          // backgroundColor: Colors.white,
+          scaffoldBackgroundColor: Colors.white,
+          // We apply this to our appBarTheme because most of our appBar have this style
+          appBarTheme: AppBarTheme(color: Colors.white, elevation: 0),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/coffee_bg.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: BrewList()
+        home: DefaultTabController(
+          length: 5,
+          child: Scaffold(
+              body: IndexedStack(
+                index: _selectedIndex,
+                children: _screens,
+              ),
+              bottomNavigationBar: Padding(
+                  padding: const EdgeInsets.only(bottom: 0.0),
+                  child: MyBottomNavBar(
+                    onTap: (index) => setState(() => _selectedIndex = index),
+                  ))),
         ),
       ),
     );
