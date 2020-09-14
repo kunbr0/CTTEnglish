@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 
 class AuthService {
-  final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
+  static final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
 
   // create user obj based on firebase user
   User _userFromFirebaseUser(auth.User user) {
@@ -58,7 +58,7 @@ class AuthService {
   }
 
   // sign out
-  Future signOut() async {
+  static Future signOut() async {
     try {
       return await _auth.signOut();
     } catch (error) {
