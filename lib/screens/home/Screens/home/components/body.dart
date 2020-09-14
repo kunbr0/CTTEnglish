@@ -6,6 +6,11 @@ import 'categories.dart';
 import 'recipe_bundel_card.dart';
 
 class Body extends StatelessWidget {
+  final Function openReader = (context) {
+    Navigator.of(context)
+        .pushNamed('/reader', arguments: 'Hello from line 10, body.dart');
+  };
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -30,7 +35,10 @@ class Body extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) => RecipeBundelCard(
                   recipeBundle: recipeBundles[index],
-                  press: () {},
+                  press: () {
+                    debugPrint(index.toString());
+                    openReader(context);
+                  },
                 ),
               ),
             ),

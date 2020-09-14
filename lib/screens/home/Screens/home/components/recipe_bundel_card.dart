@@ -21,7 +21,7 @@ class RecipeBundelCard extends StatelessWidget {
           color: recipeBundle.color,
           borderRadius: BorderRadius.circular(defaultSize * 1.8), //18
         ),
-        child: Row( 
+        child: Row(
           children: <Widget>[
             Expanded(
               child: Padding(
@@ -63,22 +63,20 @@ class RecipeBundelCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: defaultSize * 0.5), //5
-            
+
             AspectRatio(
-              aspectRatio: 0.71,
-              
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    recipeBundle.imageSrc,
-                    fit: BoxFit.fill,
-                    alignment: Alignment.centerLeft,
+                aspectRatio: 0.71,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      recipeBundle.imageSrc,
+                      fit: BoxFit.fill,
+                      alignment: Alignment.centerLeft,
+                    ),
                   ),
-                ),
-              )
-            )
+                ))
           ],
         ),
       ),
