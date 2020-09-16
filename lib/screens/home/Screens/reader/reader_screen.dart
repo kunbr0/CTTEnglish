@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'wordMeaning/wordMeaning.dart';
+import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
 import 'package:cttenglish/models/sentence.dart';
 
@@ -44,13 +44,16 @@ class _ReaderScreenState extends State<ReaderScreen> {
           });
     }
 
-    void _showWordMeaning(String data) {
+    void _showWordMeaning(String data, BuildContext screenContext) {
       showModalBottomSheet(
           context: context,
+          isScrollControlled: true,
+          elevation: 10,
           builder: (context) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 100, horizontal: 10),
-              child: WordMeaning(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              height: MediaQuery.of(context).size.height*0.7,
+              child: WordMeaningView(
                 word: data,
               ),
             );
@@ -59,7 +62,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     void onTapWord(String word) {
       debugPrint(word);
-      _showWordMeaning(word);
+      debugPrint(MediaQuery.of(context).size.height.toString());
+      _showWordMeaning(word, context);
     }
 
     KSentence sentence = new KSentence(
