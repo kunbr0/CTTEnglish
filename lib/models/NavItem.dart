@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cttenglish/screens/home/Screens/home/home_screen.dart';
 import 'package:cttenglish/screens/home/Screens/profile/profile_screen.dart';
+import 'package:cttenglish/screens/home/Screens/dictionary/dictionary_screen.dart';
 
 class NavItem {
   final int id;
@@ -38,7 +39,7 @@ class NavItems extends ChangeNotifier {
     NavItem(
       id: 2,
       icon: "assets/icons/list.svg",
-      destination: Scaffold(),
+      destination: DictionaryScreen(),
     ),
     NavItem(
       id: 3,
