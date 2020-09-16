@@ -54,6 +54,7 @@ class Wrapper extends StatelessWidget {
 
     // return either the Home or Authenticate widget
     if (user == null) {
+      // Authentication
       return FutureBuilder<bool>(
           builder: (context, projectSnap) {
             if (projectSnap.data == true)
@@ -64,6 +65,7 @@ class Wrapper extends StatelessWidget {
           },
           future: loadAssetAuthenticate());
     } else {
+      // Home
       return FutureBuilder<bool>(
           builder: (context, projectSnap) {
             if (projectSnap.data == true)
