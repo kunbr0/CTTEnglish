@@ -1,109 +1,297 @@
 import 'package:flutter/material.dart';
+import 'package:translator/translator.dart';
+
+import './../../../../models/Service.dart';
+import './../../../../models/Sentences.dart';
+import 'components/debouncer.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'dart:async';
-import '../../../../models/Sentences.dart';
-import '../../../../models/Service.dart';
 import 'package:flutter_html/style.dart';
-import 'package:http/http.dart' as http;
+import 'components/drop_down.dart';
+import 'package:cttenglish/constants.dart';
 
 class DictionaryScreen extends StatefulWidget {
-  DictionaryScreen() : super();
+  DictionaryScreen({Key key}) : super(key: key);
+  static final String path = "lib/src/pages/lists/list2.dart";
 
-  final String title = "Translator";
-
-  @override
-  DictionaryScreenState createState() => DictionaryScreenState();
+  _DictionaryScreenState createState() => _DictionaryScreenState();
 }
 
-//debound effect when
-class Debouncer {
-  final int milliseconds;
-  VoidCallback action;
-  Timer _timer;
-
-  Debouncer({this.milliseconds});
-
-  run(VoidCallback action) {
-    if (null != _timer) {
-      _timer.cancel();
-    }
-    _timer = Timer(Duration(milliseconds: milliseconds), action);
-  }
-}
-
-class DictionaryScreenState extends State<DictionaryScreen> {
-  // https://jsonplaceholder.typicode.com/users
-
+class _DictionaryScreenState extends State<DictionaryScreen> {
   final _debouncer = Debouncer(milliseconds: 500);
-
+  final translator = GoogleTranslator();
   List<Sentences> sentenceList = List<Sentences>();
+  var txt = TextEditingController();
+
+  bool loading;
+  String input;
+  var meaning;
+  String dictionary;
 
   @override
   void initState() {
     super.initState();
+    meaning = "";
+    dictionary = "Kunbr0";
+    input = "";
+    loading = false;
   }
+
+  void changeDictionary(String string) {
+    setState(() {
+      dictionary = string;
+      txt.text = "";
+      loading = false;
+      if (dictionary == "Google Translate") {
+        meaning = "";
+      } else if (dictionary == "Kunbr0") {
+        sentenceList = List();
+      }
+    });
+  }
+
+  void setStateWithDictionary(String string) {
+    setState(() {
+      loading = true;
+      input = string;
+    });
+    _debouncer.run(() async {
+      //Kunbr0 api
+      if (dictionary == "Kunbr0")
+        sentenceList = await Services.getSentences(string);
+
+      //google api
+      if (dictionary == "Google Translate") {
+        if (input != "") {
+          Translation result =
+              await translator.translate(input, from: 'en', to: 'vi');
+          setState(() {
+            meaning = result.toString();
+          });
+        } else {
+          setState(() {
+            meaning = "";
+          });
+        }
+      }
+      setState(() {
+        loading = false;
+      });
+    });
+  }
+
+  final TextStyle dropdownMenuItem =
+      TextStyle(color: Colors.black, fontSize: 18);
+
+  final primary = kPrimaryColor;
+  final secondary = Color(0xfff29a94);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        title: Text(widget.title),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                hintText: 'Enter a sentence',
+      backgroundColor: Color(0xfff0f0f0),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            children: <Widget>[
+              buildMeaningList(context),
+              Container(
+                height: 110,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30))),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Dictionary",
+                        style: TextStyle(color: Colors.white, fontSize: 24),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.filter_list,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              onChanged: (string) {
-                _debouncer.run(() async {
-                  sentenceList = await Services.getSentences(string);
-                  setState(() {});
-                });
-              },
-            ),
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 125,
+                    ),
+                    DropdownButtonExample(
+                      customFunction: changeDictionary,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 133,
+                    ),
+                    loading
+                        ? LinearProgressIndicator(
+                            backgroundColor: primary,
+                          )
+                        : Container(
+                            height: 0,
+                          ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 80,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Material(
+                        elevation: 5.0,
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        child: TextField(
+                          controller: txt,
+                          onChanged: (string) {
+                            setStateWithDictionary(string);
+                          },
+                          cursorColor: Theme.of(context).primaryColor,
+                          style: dropdownMenuItem,
+                          decoration: InputDecoration(
+                              hintText: "Enter Text",
+                              hintStyle: TextStyle(
+                                  color: Colors.black38, fontSize: 16),
+                              prefixIcon: Material(
+                                elevation: 0.0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: Icon(Icons.search),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 25, vertical: 13)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(10.0),
+        ),
+      ),
+    );
+  }
+
+  Widget buildMeaningList(BuildContext context) {
+    if (dictionary == "Kunbr0") {
+      return Container(
+          padding: EdgeInsets.only(top: 170),
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: ListView.builder(
               itemCount: sentenceList.length,
               itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          sentenceList[index].fields.en,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5.0,
-                        ),
-                        Html(data: sentenceList[index].fields.vi, style: {
-                          "em": Style(
-                            color: Colors.blue,
-//              color: Colors.white,
-                          ),
-                        }),
-                      ],
+                return buildKunbr0Item(context, index);
+              }));
+    } else if (dictionary == "Google Translate") {
+      return Container(
+          padding: EdgeInsets.only(top: 170),
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: ListView.builder(
+              itemCount: 1,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.white,
                     ),
-                  ),
-                );
-              },
-            ),
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    child: Text(
+                      meaning,
+                      style: TextStyle(
+                          color: primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ));
+                ;
+              }));
+    } else
+      return null;
+  }
+
+  Widget buildKunbr0Item(BuildContext context, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        color: Colors.white,
+      ),
+      width: double.infinity,
+      // height: 110,
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 10,
           ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  // schoolLists[index]['name'],
+                  sentenceList[index].fields.en,
+                  style: TextStyle(
+                      color: primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Wrap(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Html(data: sentenceList[index].fields.vi, style: {
+                      "em": Style(
+                          color: Colors.red,
+                          letterSpacing: .3,
+                          fontSize: FontSize.medium),
+                    }),
+                  ],
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
