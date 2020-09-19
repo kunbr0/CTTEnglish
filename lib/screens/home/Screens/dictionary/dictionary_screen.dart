@@ -1,65 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:translator/translator.dart';
 
-import '../../../../models/Service.dart';
-import './components/SentenceList.dart';
-import '../../../../models/Sentences.dart';
-import './components/Debouncer.dart';
-import './components/DropDown.dart';
+import './../../../../models/Service.dart';
+import './../../../../models/Sentences.dart';
+import 'components/debouncer.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
+import 'components/drop_down.dart';
+import 'package:cttenglish/constants.dart';
 
 class DictionaryScreen extends StatefulWidget {
-  DictionaryScreen() : super();
+  DictionaryScreen({Key key}) : super(key: key);
+  static final String path = "lib/src/pages/lists/list2.dart";
 
-  final String title = "Dictionary";
-
-  @override
-  DictionaryScreenState createState() => DictionaryScreenState();
+  _DictionaryScreenState createState() => _DictionaryScreenState();
 }
 
-class DictionaryScreenState extends State<DictionaryScreen> {
-  // https://jsonplaceholder.typicode.com/users
-
+class _DictionaryScreenState extends State<DictionaryScreen> {
   final _debouncer = Debouncer(milliseconds: 500);
-
   final translator = GoogleTranslator();
-
   List<Sentences> sentenceList = List<Sentences>();
-
   var txt = TextEditingController();
 
-  bool loading = false;
-  String input = "";
+  bool loading;
+  String input;
   var meaning;
-  String dictionary = "";
+  String dictionary;
 
   @override
   void initState() {
     super.initState();
     meaning = "";
+    dictionary = "Kunbr0";
+    input = "";
+    loading = false;
   }
 
   void changeDictionary(String string) {
     setState(() {
       dictionary = string;
       txt.text = "";
-      meaning = "";
       loading = false;
+      if (dictionary == "Google Translate") {
+        meaning = "";
+      } else if (dictionary == "Kunbr0") {
+        sentenceList = List();
+      }
     });
   }
 
-  Widget buildDictionary() {
-    if (dictionary == "Kunbr0") {
-      print(input);
-      return SentenceList(sentenceList: sentenceList);
-    }
-    if (dictionary == "Google Translate")
-      return Text(meaning);
-    else
-      return Text("Not found");
-  }
-
   void setStateWithDictionary(String string) {
-    print(string);
     setState(() {
       loading = true;
       input = string;
@@ -89,38 +79,219 @@ class DictionaryScreenState extends State<DictionaryScreen> {
     });
   }
 
+  final TextStyle dropdownMenuItem =
+      TextStyle(color: Colors.black, fontSize: 18);
+
+  final primary = kPrimaryColor;
+  final secondary = Color(0xfff29a94);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        title: Text(widget.title),
-      ),
-      body: Column(
-        children: <Widget>[
-          DropdownButtonExample(
-            customFunction: changeDictionary,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: txt,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10.0),
-                hintText: 'Enter text',
-              ),
-              onChanged: (string) {
-                setStateWithDictionary(string);
-              },
-            ),
-          ),
-          loading
-              ? LinearProgressIndicator()
-              : Container(
-                  height: 0,
+      backgroundColor: Color(0xfff0f0f0),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            children: <Widget>[
+              buildMeaningList(context),
+              Container(
+                height: 110,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30))),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Dictionary",
+                        style: TextStyle(color: Colors.white, fontSize: 24),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.filter_list,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-          buildDictionary()
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 125,
+                    ),
+                    DropdownButtonExample(
+                      customFunction: changeDictionary,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 133,
+                    ),
+                    loading
+                        ? LinearProgressIndicator(
+                            backgroundColor: primary,
+                          )
+                        : Container(
+                            height: 0,
+                          ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 80,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Material(
+                        elevation: 5.0,
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        child: TextField(
+                          controller: txt,
+                          onChanged: (string) {
+                            setStateWithDictionary(string);
+                          },
+                          cursorColor: Theme.of(context).primaryColor,
+                          style: dropdownMenuItem,
+                          decoration: InputDecoration(
+                              hintText: "Enter Text",
+                              hintStyle: TextStyle(
+                                  color: Colors.black38, fontSize: 16),
+                              prefixIcon: Material(
+                                elevation: 0.0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: Icon(Icons.search),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 25, vertical: 13)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildMeaningList(BuildContext context) {
+    if (dictionary == "Kunbr0") {
+      return Container(
+          padding: EdgeInsets.only(top: 170),
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: ListView.builder(
+              itemCount: sentenceList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return buildKunbr0Item(context, index);
+              }));
+    } else if (dictionary == "Google Translate") {
+      return Container(
+          padding: EdgeInsets.only(top: 170),
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: ListView.builder(
+              itemCount: 1,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.white,
+                    ),
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    child: Text(
+                      meaning,
+                      style: TextStyle(
+                          color: primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ));
+                ;
+              }));
+    } else
+      return null;
+  }
+
+  Widget buildKunbr0Item(BuildContext context, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        color: Colors.white,
+      ),
+      width: double.infinity,
+      // height: 110,
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  // schoolLists[index]['name'],
+                  sentenceList[index].fields.en,
+                  style: TextStyle(
+                      color: primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Wrap(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Html(data: sentenceList[index].fields.vi, style: {
+                      "em": Style(
+                          color: Colors.red,
+                          letterSpacing: .3,
+                          fontSize: FontSize.medium),
+                    }),
+                  ],
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
