@@ -22,7 +22,8 @@ class Services {
         throw Exception("Error");
       }
     } catch (e) {
-      throw Exception(e.toString());
+      // throw Exception(e.toString());
+      print('Timeout');
     }
   }
 

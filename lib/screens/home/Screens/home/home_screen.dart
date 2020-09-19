@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:cttenglish/screens/home/Screens/home/components/body.dart';
 import 'package:cttenglish/size_config.dart';
 import 'package:cttenglish/constants.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -32,10 +33,8 @@ class HomeScreen extends StatelessWidget {
           SvgPicture.asset("assets/images/logo.svg", width: 40),
           SizedBox(width: 10),
           Text(
-            'CTT English', style: 
-            TextStyle(
-              color: kTextColor
-            ),
+            'CTT English',
+            style: TextStyle(color: kTextColor),
           )
         ],
       ),
