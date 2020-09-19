@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cttenglish/screens/home/Screens/home/home_screen.dart';
 import 'package:cttenglish/screens/home/Screens/profile/profile_screen.dart';
 import 'package:cttenglish/screens/home/Screens/dictionary/dictionary_screen.dart';
+import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
 
 class NavItem {
   final int id;
@@ -44,7 +45,7 @@ class NavItems extends ChangeNotifier {
     NavItem(
       id: 3,
       icon: "assets/icons/camera.svg",
-      destination: Scaffold(),
+      destination: QuizHomePage(),
     ),
     NavItem(
       id: 4,

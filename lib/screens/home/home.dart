@@ -18,6 +18,8 @@ class _HomeState extends State<Home> {
   final List<Widget> _screens = NavItems().items.map((e) {
     return e.destination;
   }).toList();
+
+  
   
 
   // This widget is the root of your application.
@@ -51,7 +53,8 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.only(bottom: 0.0),
                   child: MyBottomNavBar(
                     onTap: (index) => setState(() => _selectedIndex = index),
-                  ))),
+                  ))  
+            ),
         ),
       ),
     );

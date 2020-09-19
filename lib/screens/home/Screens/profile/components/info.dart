@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cttenglish/constants.dart';
 import 'package:cttenglish/size_config.dart';
 
+import 'package:cttenglish/widgets/KNetwork_image.dart';
+
 class Info extends StatelessWidget {
   const Info({
     Key key,
@@ -44,6 +46,7 @@ class Info extends StatelessWidget {
                       fit: BoxFit.cover,
                       image: AssetImage(image),
                     ),
+                    
                   ),
                 ),
                 Text(

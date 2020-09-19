@@ -1,29 +1,69 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
 import 'package:cttenglish/models/sentence.dart';
+import './articleContent.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+
 
 class ReaderScreen extends StatefulWidget {
   final String data;
   ReaderScreen({Key key, @required this.data}) : super(key: key);
   @override
-  _ReaderScreenState createState() => _ReaderScreenState(data: data);
+  _ReaderScreenState createState() => _ReaderScreenState(articleUrl: data);
 }
 
 class _ReaderScreenState extends State<ReaderScreen> {
-  final String data;
+  final String articleUrl;
   double fontSize = 19.0;
-  _ReaderScreenState({Key key, @required this.data});
-  void initState() {
-    super.initState();
-    fontSize = fontSize ?? 0.0;
-  }
+  final articleContentStream = StreamController <ArticleContent>();
 
+  _ReaderScreenState({Key key, @required this.articleUrl});
+
+  void getNewspaper() async {
+    // This example uses the Google Books API to search for books about http.
+    // https://developers.google.com/books/docs/overview
+    var url = articleUrl;
+
+    // Await the http get response, then decode the json-formatted response.
+    var response = await http.get(url);
+    
+    if (response.statusCode == 200) {
+      var dataResponse = convert.jsonDecode(response.body)['data'];
+      debugPrint(response.toString());
+      var artContent = new ArticleContent(
+        title: dataResponse['title'],
+        content: dataResponse['content']
+      );
+
+      print('Get wordmeaning successfully .');
+      articleContentStream.sink.add(artContent);
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+      articleContentStream.sink.addError('Request failed with status: ${response.statusCode}.');
+    }
+  }
   void _changeFontSize(double newFontSize) {
     setState(() {
       fontSize = newFontSize;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fontSize = fontSize ?? 0.0;
+    getNewspaper();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    articleContentStream.close();
   }
 
   
@@ -66,13 +106,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
       _showWordMeaning(word, context);
     }
 
-    KSentence sentence = new KSentence(
-        data: data,
-        sentence: data
-            .split(" ")
-            .map((word) =>
-                KWord(word, fontSize: fontSize, onTap: onTapWord).word)
-            .toList());
+    // KSentence sentence = new KSentence(
+    //     data: data,
+    //     sentence: data
+    //         .split(" ")
+    //         .map((word) =>
+    //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
+    //         .toList());
 
     return Scaffold(
         appBar: AppBar(
@@ -88,10 +128,21 @@ class _ReaderScreenState extends State<ReaderScreen> {
             ),
           ],
         ),
-        body: Container(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-            child: Wrap(
-              children: sentence.sentence,
-            )));
+        body: StreamBuilder(
+          stream: articleContentStream.stream,
+          builder: (context, snapshot) {
+            if(!snapshot.hasData){
+              return Text('Loading...');
+            }
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Html(data: snapshot.data.content,)
+                ],
+              ),
+            );
+          }
+        ),
+    );
   }
 }
