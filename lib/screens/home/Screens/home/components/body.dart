@@ -1,23 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:cttenglish/models/RecipeBundel.dart';
 import 'package:cttenglish/size_config.dart';
+import 'package:flutter/rendering.dart';
 
 import 'categories.dart';
 import 'recipe_bundel_card.dart';
+import './Categories/NewspaperView.dart';
 
-class Body extends StatelessWidget {
-  final Function openReader = (context) {
-    Navigator.of(context)
-        .pushNamed('/reader', arguments: 'After the country managed to bring the second wave of the pandemic under control, the transport ministry earlier this month proposed reopening flights to mainland China, Japan, and South Korea starting September 15, followed by Laos, Cambodia and Taiwan starting September 22. The ministry estimates the number of arrivals to be quarantined per week at about 5,000 in Hanoi and HCMC.');
-  };
+
+class Body extends StatefulWidget {
+  @override
+  _BodyState createState() => _BodyState();
+}
+
+
+class _BodyState extends State<Body> {
+
+  int selectedCategoryIndex = 0;
+  
+  void changeCategoryIndex(int index){
+    setState(() {
+      selectedCategoryIndex = index;
+    });
+  }
+
+
+  Widget switchCategory(int index){
+    switch (index) {
+      case 0: return CategoryAll();
+      case 1: return CategoryNewspaper();
+      case 2: return CategoryIelts();
+      case 3: return CategoryToeic();
+      
+      default: return CategoryAll();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Line 34: ' + selectedCategoryIndex.toString());
     return SafeArea(
       child: Column(
         children: <Widget>[
-          Categories(),
-          Expanded(
+          // named constructor
+          Categories(onChangeCategoryIndex: changeCategoryIndex,),
+          
+          //debugPrint(index???) index ????
+           // switch ( selectedCategoryIndex) case 0 : . case 1: 
+          switchCategory(selectedCategoryIndex)
+          
+        ],
+      ),
+    );
+  }
+}
+
+class CategoryAll extends StatelessWidget {
+  const CategoryAll({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
             child: Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: SizeConfig.defaultSize * 2),
@@ -37,14 +82,47 @@ class Body extends StatelessWidget {
                   recipeBundle: recipeBundles[index],
                   press: () {
                     debugPrint(index.toString());
-                    openReader(context);
+                    
                   },
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          );
+  }
+}
+
+class CategoryNewspaper extends StatelessWidget {
+  const CategoryNewspaper({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child:  NewspaperView(),
+      
     );
+  }
+}
+
+class CategoryIelts extends StatelessWidget {
+  const CategoryIelts({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Day la page Ielts');
+  }
+}
+
+class CategoryToeic extends StatelessWidget {
+  const CategoryToeic({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Day la page Toeic');
   }
 }

@@ -6,7 +6,7 @@ import 'package:cttenglish/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-
+import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
 class Wrapper extends StatelessWidget {
   Future<bool> kPrecache(List<String> listAssetPath) async {
     await Future.forEach(listAssetPath, (path) async {
@@ -70,6 +70,7 @@ class Wrapper extends StatelessWidget {
           builder: (context, projectSnap) {
             if (projectSnap.data == true)
               return Home();
+              //return QuizHomePage();
             else {
               return Text("Loading...");
             }
