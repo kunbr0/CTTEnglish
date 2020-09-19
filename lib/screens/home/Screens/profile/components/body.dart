@@ -5,6 +5,7 @@ import 'package:cttenglish/services/auth.dart';
 import 'info.dart';
 import 'profile_menu_item.dart';
 
+
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,10 @@ class Body extends StatelessWidget {
           ProfileMenuItem(
             iconSrc: "assets/icons/bookmark_fill.svg",
             title: "Saved words",
-            press: () {},
+            press: () {
+              Navigator.of(context).pushNamed('/quiz_app');
+
+            },
           ),
           ProfileMenuItem(
             iconSrc: "assets/icons/chef_color.svg",
