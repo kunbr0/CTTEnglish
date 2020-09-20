@@ -6,6 +6,9 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
+import '../../../../../../constants.dart';
+import 'package:cttenglish/constants.dart';
+
 class NewspaperView extends StatefulWidget {
   final String word;
   NewspaperView({Key key, this.word}) : super(key: key);
@@ -37,6 +40,7 @@ class _NewspaperViewState extends State<NewspaperView> {
         return Newspaper(
             id: news['article_id'],
             title: news['title'],
+            lead: news['lead'],
             thumbnailUrl: news['thumbnail_url'],
             publishTime: news['publish_time'],
             urlFull:
@@ -102,12 +106,13 @@ class _NewspaperViewState extends State<NewspaperView> {
                             ]),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10),
-                          child: Row(
+                              horizontal: 12, vertical: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               CachedNetworkImage(
-                                height: 100,
-                                width: 120,
+                                height: 200,
+                                width: 360,
                                 imageUrl: snapshot.data[index].thumbnailUrl,
                                 imageBuilder: (context, imageProvider) =>
                                     Container(
@@ -123,39 +128,38 @@ class _NewspaperViewState extends State<NewspaperView> {
                                     Icon(Icons.error),
                               ),
                               SizedBox(
-                                width: 10,
+                                height: 10,
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Vnexpress',
-                                          style: TextStyle(
-                                              color: Color(0xff911f20),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(width: 20),
-                                        Text(
-                                            timeago.format(new DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                snapshot.data[index]
-                                                        .publishTime *
-                                                    1000)),
-                                            style: TextStyle(
-                                                color: Color(0xff696969)))
-                                      ],
+                              // Row(
+                              //   children: [
+                              Text(
+                                snapshot.data[index].title,
+                                style: TextStyle(
+                                    color: cArticleTitle,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                  timeago.format(
+                                      new DateTime.fromMillisecondsSinceEpoch(
+                                          snapshot.data[index].publishTime *
+                                              1000)),
+                                  style: TextStyle(color: Color(0xff696969)))
+                              // ],
+                              // )
+                              ,
+                              SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(snapshot.data[index].lead,
+                                    style: TextStyle(
+                                      fontSize: 15,
                                     ),
-                                    SizedBox(height: 20),
-                                    Text(snapshot.data[index].title,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis),
-                                  ],
-                                ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
                               ),
+                              SizedBox(height: 10),
                             ],
                           ),
                         ))

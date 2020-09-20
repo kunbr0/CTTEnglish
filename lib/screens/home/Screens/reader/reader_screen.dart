@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../constants.dart';
 import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
 import 'package:cttenglish/models/sentence.dart';
 import './articleContent.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
-
+import 'package:cttenglish/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ReaderScreen extends StatefulWidget {
   final String data;
@@ -20,7 +22,7 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
   double fontSize = 19.0;
-  final articleContentStream = StreamController <ArticleContent>();
+  final articleContentStream = StreamController<ArticleContent>();
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
@@ -31,22 +33,24 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
-    
+
     if (response.statusCode == 200) {
       var dataResponse = convert.jsonDecode(response.body)['data'];
       debugPrint(response.toString());
       var artContent = new ArticleContent(
-        title: dataResponse['title'],
-        content: dataResponse['content']
-      );
+          title: dataResponse['title'],
+          content: dataResponse['content'],
+          thumbnailUrl: dataResponse['thumbnail_url']);
 
       print('Get wordmeaning successfully .');
       articleContentStream.sink.add(artContent);
     } else {
       print('Request failed with status: ${response.statusCode}.');
-      articleContentStream.sink.addError('Request failed with status: ${response.statusCode}.');
+      articleContentStream.sink
+          .addError('Request failed with status: ${response.statusCode}.');
     }
   }
+
   void _changeFontSize(double newFontSize) {
     setState(() {
       fontSize = newFontSize;
@@ -65,8 +69,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     super.dispose();
     articleContentStream.close();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +94,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           builder: (context) {
             return Container(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              height: MediaQuery.of(context).size.height*0.7,
+              height: MediaQuery.of(context).size.height * 0.7,
               child: WordMeaningView(
                 word: data,
               ),
@@ -115,34 +117,60 @@ class _ReaderScreenState extends State<ReaderScreen> {
     //         .toList());
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Reader Screen'),
-          backgroundColor: Colors.blue,
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset(
-                "assets/icons/settings.svg",
-                width: 25,
-              ),
-              onPressed: () => _showSettingsPanel(),
+      appBar: AppBar(
+        title: Text('Reader Screen'),
+        backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: SvgPicture.asset(
+              "assets/icons/settings.svg",
+              width: 25,
             ),
-          ],
-        ),
-        body: StreamBuilder(
+            onPressed: () => _showSettingsPanel(),
+          ),
+        ],
+      ),
+      body: StreamBuilder(
           stream: articleContentStream.stream,
           builder: (context, snapshot) {
-            if(!snapshot.hasData){
+            if (!snapshot.hasData) {
               return Text('Loading...');
             }
             return SingleChildScrollView(
-              child: Column(
-                children: [
-                  Html(data: snapshot.data.content,)
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
+                  children: [
+                    CachedNetworkImage(
+                      height: 200,
+                      width: 360,
+                      imageUrl: snapshot.data.thumbnailUrl,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                    Text(
+                      snapshot.data.title,
+                      style: TextStyle(
+                          color: cArticleTitle,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Html(
+                      data: snapshot.data.content,
+                    )
+                  ],
+                ),
               ),
             );
-          }
-        ),
+          }),
     );
   }
 }
