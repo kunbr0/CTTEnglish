@@ -6,8 +6,10 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-import '../../../../../../constants.dart';
-import 'package:cttenglish/constants.dart';
+import 'Newspaper.dart';
+
+// import '../../../../../../constants.dart';
+// import 'package:cttenglish/constants.dart';
 
 class NewspaperView extends StatefulWidget {
   final String word;
@@ -34,11 +36,13 @@ class _NewspaperViewState extends State<NewspaperView> {
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
 
-      var articlesData = jsonResponse['data']['1003894'].map<Newspaper>((news) {
+      List<Newspaper> articlesData =
+          jsonResponse['data']['1003894'].map<Newspaper>((news) {
         var newsId = news['article_id'].toString();
 
         return Newspaper(
             id: news['article_id'],
+            isInvalid: news['article_type'] == 1 ? true : false,
             title: news['title'],
             lead: news['lead'],
             thumbnailUrl: news['thumbnail_url'],
@@ -47,8 +51,10 @@ class _NewspaperViewState extends State<NewspaperView> {
                 'https://api3.vnexpress.net/api/article?type=get_full&article_id=$newsId&app_id=9e304d');
       }).toList();
 
-      print('Get wordmeaning successfully .');
-      ariclesList.sink.add(articlesData);
+      List<Newspaper> filterArticles =
+          articlesData.where((i) => i.isInvalid).toList();
+
+      ariclesList.sink.add(filterArticles);
     } else {
       print('Request failed with status: ${response.statusCode}.');
       ariclesList.sink
@@ -81,145 +87,148 @@ class _NewspaperViewState extends State<NewspaperView> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 // return Text(index.toString());
-                return InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/reader',
-                          arguments: snapshot.data[index].urlFull);
-                    },
-                    // child: Container(
-                    //     padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    //     margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                    //     decoration: BoxDecoration(
-                    //         border:
-                    //             Border.all(width: 1, color: Colors.blue[200])),
-                    child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 0),
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0)),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withAlpha(100),
-                                  blurRadius: 10.0),
-                            ]),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              CachedNetworkImage(
-                                height: 200,
-                                width: 360,
-                                imageUrl: snapshot.data[index].thumbnailUrl,
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/reader',
+                            arguments: snapshot.data[index].urlFull);
+                      },
+                      // child: Container(
+                      //     padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      //     margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      //     decoration: BoxDecoration(
+                      //         border:
+                      //             Border.all(width: 1, color: Colors.blue[200])),
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 0),
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withAlpha(100),
+                                    blurRadius: 10.0),
+                              ]),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                CachedNetworkImage(
+                                  height: 200,
+                                  width: 360,
+                                  imageUrl: snapshot.data[index].thumbnailUrl,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
                                 ),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              // Row(
-                              //   children: [
-                              Text(
-                                snapshot.data[index].title,
-                                style: TextStyle(
-                                    color: cArticleTitle,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                  timeago.format(
-                                      new DateTime.fromMillisecondsSinceEpoch(
-                                          snapshot.data[index].publishTime *
-                                              1000)),
-                                  style: TextStyle(color: Color(0xff696969)))
-                              // ],
-                              // )
-                              ,
-                              SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(snapshot.data[index].lead,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                              ),
-                              SizedBox(height: 10),
-                            ],
-                          ),
-                        ))
-                    // Row(
-                    //   children: [
-                    //     CachedNetworkImage(
-                    //       height: 55,
-                    //       width: 90,
-                    //       imageUrl: snapshot.data[index].thumbnailUrl,
-                    //       imageBuilder: (context, imageProvider) =>
-                    //           Container(
-                    //         decoration: BoxDecoration(
-                    //           borderRadius: BorderRadius.circular(10),
-                    //           image: DecorationImage(
-                    //             image: imageProvider,
-                    //             fit: BoxFit.cover,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       errorWidget: (context, url, error) =>
-                    //           Icon(Icons.error),
-                    //     ),
-                    //     // Image.network('https://placeimg.com/640/480/any',
-                    //     //     width: 90, height: 55, fit: BoxFit.fill),
-                    //     SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //     Expanded(
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           Row(
-                    //             mainAxisAlignment:
-                    //                 MainAxisAlignment.spaceBetween,
-                    //             children: [
-                    //               Text(
-                    //                 'Vnexpress',
-                    //                 style:
-                    //                     TextStyle(color: Color(0xff911f20)),
-                    //               ),
-                    //               Text(
-                    //                   timeago.format(new DateTime
-                    //                           .fromMillisecondsSinceEpoch(
-                    //                       snapshot.data[index].publishTime *
-                    //                           1000)),
-                    //                   style: TextStyle(
-                    //                       color: Color(0xff696969)))
-                    //             ],
-                    //           ),
-                    //           SizedBox(height: 5),
-                    //           Text(snapshot.data[index].title,
-                    //               maxLines: 2,
-                    //               overflow: TextOverflow.ellipsis),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ],
-                    // )
-                    // ),
-                    );
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                // Row(
+                                //   children: [
+                                Text(
+                                  snapshot.data[index].title,
+                                  style: TextStyle(
+                                      color: Color(0xff911f20),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                    timeago.format(
+                                        new DateTime.fromMillisecondsSinceEpoch(
+                                            snapshot.data[index].publishTime *
+                                                1000)),
+                                    style: TextStyle(color: Color(0xff696969)))
+                                // ],
+                                // )
+                                ,
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(snapshot.data[index].lead,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ))
+                      // Row(
+                      //   children: [
+                      //     CachedNetworkImage(
+                      //       height: 55,
+                      //       width: 90,
+                      //       imageUrl: snapshot.data[index].thumbnailUrl,
+                      //       imageBuilder: (context, imageProvider) =>
+                      //           Container(
+                      //         decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(10),
+                      //           image: DecorationImage(
+                      //             image: imageProvider,
+                      //             fit: BoxFit.cover,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       errorWidget: (context, url, error) =>
+                      //           Icon(Icons.error),
+                      //     ),
+                      //     // Image.network('https://placeimg.com/640/480/any',
+                      //     //     width: 90, height: 55, fit: BoxFit.fill),
+                      //     SizedBox(
+                      //       width: 10,
+                      //     ),
+                      //     Expanded(
+                      //       child: Column(
+                      //         crossAxisAlignment: CrossAxisAlignment.start,
+                      //         children: [
+                      //           Row(
+                      //             mainAxisAlignment:
+                      //                 MainAxisAlignment.spaceBetween,
+                      //             children: [
+                      //               Text(
+                      //                 'Vnexpress',
+                      //                 style:
+                      //                     TextStyle(color: Color(0xff911f20)),
+                      //               ),
+                      //               Text(
+                      //                   timeago.format(new DateTime
+                      //                           .fromMillisecondsSinceEpoch(
+                      //                       snapshot.data[index].publishTime *
+                      //                           1000)),
+                      //                   style: TextStyle(
+                      //                       color: Color(0xff696969)))
+                      //             ],
+                      //           ),
+                      //           SizedBox(height: 5),
+                      //           Text(snapshot.data[index].title,
+                      //               maxLines: 2,
+                      //               overflow: TextOverflow.ellipsis),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // )
+                      // ),
+                      ),
+                );
               });
         });
   }

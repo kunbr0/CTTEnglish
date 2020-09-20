@@ -2,15 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../constants.dart';
 import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
-import 'package:cttenglish/models/sentence.dart';
-import './articleContent.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
-import 'package:cttenglish/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_html/style.dart';
+
+import 'package:cttenglish/constants.dart';
+import '../../../../constants.dart';
+import './articleContent.dart';
 
 class ReaderScreen extends StatefulWidget {
   final String data;
@@ -36,13 +37,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     if (response.statusCode == 200) {
       var dataResponse = convert.jsonDecode(response.body)['data'];
-      debugPrint(response.toString());
       var artContent = new ArticleContent(
-          title: dataResponse['title'],
-          content: dataResponse['content'],
-          thumbnailUrl: dataResponse['thumbnail_url']);
-
-      print('Get wordmeaning successfully .');
+        title: dataResponse['title'],
+        content: dataResponse['content'],
+        thumbnailUrl: dataResponse['thumbnail_url'],
+      );
       articleContentStream.sink.add(artContent);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -147,7 +146,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                       imageUrl: snapshot.data.thumbnailUrl,
                       imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(5),
                           image: DecorationImage(
                             image: imageProvider,
                             fit: BoxFit.cover,
@@ -156,16 +155,25 @@ class _ReaderScreenState extends State<ReaderScreen> {
                       ),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
-                    Text(
-                      snapshot.data.title,
-                      style: TextStyle(
-                          color: cArticleTitle,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
+                    SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        snapshot.data.title,
+                        style: TextStyle(
+                            color: cArticleTitle,
+                            fontSize: 23,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    Html(
-                      data: snapshot.data.content,
-                    )
+                    snapshot.data.content != null
+                        ? Html(data: snapshot.data.content, style: {
+                            "p": Style(
+                              fontSize: FontSize.larger,
+                            ),
+                            "img": Style()
+                          })
+                        : Container(height: 0)
                   ],
                 ),
               ),

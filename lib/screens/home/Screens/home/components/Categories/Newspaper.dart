@@ -1,4 +1,5 @@
 class Newspaper {
+  final bool isInvalid;
   final String title;
   final int id;
   final String thumbnailUrl;
@@ -12,5 +13,6 @@ class Newspaper {
       this.thumbnailUrl,
       this.title,
       this.lead,
-      this.urlFull});
+      this.urlFull,
+      this.isInvalid});
 }
