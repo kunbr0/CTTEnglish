@@ -7,32 +7,33 @@ import 'categories.dart';
 import 'recipe_bundel_card.dart';
 import './Categories/NewspaperView.dart';
 
-
 class Body extends StatefulWidget {
   @override
   _BodyState createState() => _BodyState();
 }
 
-
 class _BodyState extends State<Body> {
-
   int selectedCategoryIndex = 0;
-  
-  void changeCategoryIndex(int index){
+
+  void changeCategoryIndex(int index) {
     setState(() {
       selectedCategoryIndex = index;
     });
   }
 
-
-  Widget switchCategory(int index){
+  Widget switchCategory(int index) {
     switch (index) {
-      case 0: return CategoryAll();
-      case 1: return CategoryNewspaper();
-      case 2: return CategoryIelts();
-      case 3: return CategoryToeic();
-      
-      default: return CategoryAll();
+      case 0:
+        return CategoryAll();
+      case 1:
+        return CategoryNewspaper();
+      case 2:
+        return CategoryIelts();
+      case 3:
+        return CategoryToeic();
+
+      default:
+        return CategoryAll();
     }
   }
 
@@ -43,12 +44,13 @@ class _BodyState extends State<Body> {
       child: Column(
         children: <Widget>[
           // named constructor
-          Categories(onChangeCategoryIndex: changeCategoryIndex,),
-          
+          Categories(
+            onChangeCategoryIndex: changeCategoryIndex,
+          ),
+
           //debugPrint(index???) index ????
-           // switch ( selectedCategoryIndex) case 0 : . case 1: 
+          // switch ( selectedCategoryIndex) case 0 : . case 1:
           switchCategory(selectedCategoryIndex)
-          
         ],
       ),
     );
@@ -63,31 +65,28 @@ class CategoryAll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-            child: Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: SizeConfig.defaultSize * 2),
-              child: GridView.builder(
-                itemCount: recipeBundles.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount:
-                      SizeConfig.orientation == Orientation.landscape ? 2 : 1,
-                  mainAxisSpacing: 20,
-                  crossAxisSpacing:
-                      SizeConfig.orientation == Orientation.landscape
-                          ? SizeConfig.defaultSize * 2
-                          : 0,
-                  childAspectRatio: 1.65,
-                ),
-                itemBuilder: (context, index) => RecipeBundelCard(
-                  recipeBundle: recipeBundles[index],
-                  press: () {
-                    debugPrint(index.toString());
-                    
-                  },
-                ),
-              ),
-            ),
-          );
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: SizeConfig.defaultSize * 2),
+        child: GridView.builder(
+          itemCount: recipeBundles.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:
+                SizeConfig.orientation == Orientation.landscape ? 2 : 1,
+            mainAxisSpacing: 20,
+            crossAxisSpacing: SizeConfig.orientation == Orientation.landscape
+                ? SizeConfig.defaultSize * 2
+                : 0,
+            childAspectRatio: 1.65,
+          ),
+          itemBuilder: (context, index) => RecipeBundelCard(
+            recipeBundle: recipeBundles[index],
+            press: () {
+              debugPrint(index.toString());
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -99,8 +98,7 @@ class CategoryNewspaper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child:  NewspaperView(),
-      
+      child: NewspaperView(),
     );
   }
 }
