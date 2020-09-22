@@ -25,7 +25,8 @@ class ReaderScreen extends StatefulWidget {
 
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
-  double fontSize = 19.0;
+  static double fontSize = 19.0;
+  static Color backgroundColor = Color.fromRGBO(38, 38, 38, 0.4);
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
 
@@ -57,7 +58,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _changeFontSize(double newFontSize) {
     this.kSentences.onChangeFontSize(newFontSize);
     setState(() {
-      fontSize = newFontSize;
+      _ReaderScreenState.fontSize = newFontSize;
+    });
+  }
+
+  void _onChangeBackgroundColor(Color color) {
+    setState(() {
+      _ReaderScreenState.backgroundColor = color;
     });
   }
 
@@ -65,6 +72,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void initState() {
     super.initState();
     fontSize = fontSize ?? 0.0;
+    _ReaderScreenState.backgroundColor = _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
     getNewspaper();
   }
 
@@ -85,6 +93,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
               child: SettingsPanel(
                 fontSize: fontSize,
                 changeFontSize: _changeFontSize,
+                changeBackgroundColor: _onChangeBackgroundColor,
               ),
             );
           });
@@ -111,6 +120,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
       debugPrint(MediaQuery.of(context).size.height.toString());
       _showWordMeaning(word, context);
     }
+    
+
     this.kSentences.onCallback(onTapWord);
     // KSentence sentence = new KSentence(
     //     data: data,
@@ -143,54 +154,57 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
             this.kSentences = new KSentences.initData(snapshot.data.content);
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Column(
-                  children: [
-                    CachedNetworkImage(
-                      height: 200,
-                      width: 360,
-                      imageUrl: snapshot.data.thumbnailUrl,
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
+            return Container(
+              color: _ReaderScreenState.backgroundColor,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Column(
+                    children: [
+                      CachedNetworkImage(
+                        height: 200,
+                        width: 360,
+                        imageUrl: snapshot.data.thumbnailUrl,
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        snapshot.data.title,
-                        style: TextStyle(
-                            color: cArticleTitle,
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold),
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          snapshot.data.title,
+                          style: TextStyle(
+                              color: cArticleTitle,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    // snapshot.data.content != null
-                    //     ? Html(data: snapshot.data.content, style: {
-                    //         "p": Style(
-                    //           fontSize: FontSize.larger,
-                    //         ),
-                    //         "img": Style(
+                      // snapshot.data.content != null
+                      //     ? Html(data: snapshot.data.content, style: {
+                      //         "p": Style(
+                      //           fontSize: FontSize.larger,
+                      //         ),
+                      //         "img": Style(
 
-                    //         )
-                    //       })
-                    //     : Container(height: 0)
-                    Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: kSentences.getAllTextContent(),
-                      ),
-                    )
-                  ],
+                      //         )
+                      //       })
+                      //     : Container(height: 0)
+                      Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: kSentences.getAllTextContent(),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );

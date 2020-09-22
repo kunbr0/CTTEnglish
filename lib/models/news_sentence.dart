@@ -64,7 +64,6 @@ class KSentences extends _KSentence {
   KSentences();
 
   onCallback(Function f) {
-    if(KSentences.callback != null) return;
     KSentences.callback = f;
     _KWord.onTapWord = f;
   }
