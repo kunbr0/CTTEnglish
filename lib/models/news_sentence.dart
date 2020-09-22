@@ -5,11 +5,11 @@ class _KWord {
   String data;
   GestureDetector word;
   static double fontSize = 18;
-
+  static Function onTapWord = (){};
   _KWord(String str) {
     this.data = str;
     this.word = GestureDetector(
-      onTap: () => {},
+      onTap: () => onTapWord(data),
       child: Container(
         margin: EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Text(
@@ -46,6 +46,7 @@ class _KSentence {
 class KSentences extends _KSentence {
   String _data;
   List<_KSentence> listSentence = new List<_KSentence>();
+  static Function callback;
 
   void _mapDataToListSentence() {
     final htmlDocument = parse(_data);
@@ -60,10 +61,22 @@ class KSentences extends _KSentence {
     _KWord.fontSize = newSize;
   }
 
-  KSentences(String data) {
+  KSentences();
+
+  onCallback(Function f) {
+    if(KSentences.callback != null) return;
+    KSentences.callback = f;
+    _KWord.onTapWord = f;
+  }
+
+  KSentences.initData(String data){
     this._data = data;
     _mapDataToListSentence();
   }
+
+  
+
+
 
   List<Widget> getAllTextContent() {
     List<Widget> result = new List<Widget>();

@@ -26,7 +26,7 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
   double fontSize = 19.0;
-  KSentences kSentences;
+  KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
 
   _ReaderScreenState({Key key, @required this.articleUrl});
@@ -111,7 +111,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       debugPrint(MediaQuery.of(context).size.height.toString());
       _showWordMeaning(word, context);
     }
-
+    this.kSentences.onCallback(onTapWord);
     // KSentence sentence = new KSentence(
     //     data: data,
     //     sentence: data
@@ -141,7 +141,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
               return Text('Loading...');
             }
 
-            this.kSentences = new KSentences(snapshot.data.content);
+            this.kSentences = new KSentences.initData(snapshot.data.content);
 
             return SingleChildScrollView(
               child: Padding(
