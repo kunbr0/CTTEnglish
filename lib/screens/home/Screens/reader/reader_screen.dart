@@ -15,7 +15,6 @@ import './articleContent.dart';
 
 import 'package:cttenglish/models/news_sentence.dart';
 
-
 class ReaderScreen extends StatefulWidget {
   final String data;
   ReaderScreen({Key key, @required this.data}) : super(key: key);
@@ -118,7 +117,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
     //         .toList());
 
-    
     return Scaffold(
       appBar: AppBar(
         title: Text('Reader Screen'),
@@ -141,8 +139,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
             }
 
             final kSentences = new KSentences(snapshot.data.content);
-            
-            
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(14.0),
@@ -180,12 +177,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     //           fontSize: FontSize.larger,
                     //         ),
                     //         "img": Style(
-                              
+
                     //         )
                     //       })
                     //     : Container(height: 0)
-                    Column(
-                      children: kSentences.getAllTextContent(),
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: kSentences.getAllTextContent(),
+                      ),
                     )
                   ],
                 ),
