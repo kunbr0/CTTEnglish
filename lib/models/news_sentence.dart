@@ -4,19 +4,18 @@ import 'package:html/parser.dart';
 class _KWord {
   String data;
   GestureDetector word;
-  static double fontSize;
+  static double fontSize = 18;
 
-  _KWord(String str, {Function onTap, double fontSize = 15}) {
+  _KWord(String str) {
     this.data = str;
-    fontSize = fontSize;
     this.word = GestureDetector(
-      onTap: () => onTap(str),
+      onTap: () => {},
       child: Container(
         margin: EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Text(
           str,
           style: TextStyle(
-            fontSize: fontSize,
+            fontSize: _KWord.fontSize,
           ),
           overflow: TextOverflow.fade,
         ),
@@ -32,7 +31,7 @@ class _KSentence {
   void _mapDataToListWord() {
 //    debugPrint("Beginnnn" + this._data + "Endddddd");
     _data.split(" ").forEach((element) {
-      final word = new _KWord(element, onTap: () {}, fontSize: 15);
+      final word = new _KWord(element);
       listWord.add(word);
     });
   }
@@ -52,9 +51,13 @@ class KSentences extends _KSentence {
     final htmlDocument = parse(_data);
     final sentences = htmlDocument.querySelectorAll("p");
     for (final sentence in sentences) {
-      var stringSentence = new _KSentence.init(sentence.text);
+      _KSentence stringSentence = new _KSentence.init(sentence.text);
       listSentence.add(stringSentence);
     }
+  }
+
+  void onChangeFontSize(double newSize) {
+    _KWord.fontSize = newSize;
   }
 
   KSentences(String data) {
@@ -64,6 +67,7 @@ class KSentences extends _KSentence {
 
   List<Widget> getAllTextContent() {
     List<Widget> result = new List<Widget>();
+
     listSentence.forEach((sentence) {
       List<Widget> sente = new List<Widget>();
 

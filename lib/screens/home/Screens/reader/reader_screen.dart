@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,6 +26,7 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
   double fontSize = 19.0;
+  KSentences kSentences;
   final articleContentStream = StreamController<ArticleContent>();
 
   _ReaderScreenState({Key key, @required this.articleUrl});
@@ -53,6 +55,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _changeFontSize(double newFontSize) {
+    this.kSentences.onChangeFontSize(newFontSize);
     setState(() {
       fontSize = newFontSize;
     });
@@ -138,7 +141,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
               return Text('Loading...');
             }
 
-            final kSentences = new KSentences(snapshot.data.content);
+            this.kSentences = new KSentences(snapshot.data.content);
 
             return SingleChildScrollView(
               child: Padding(
