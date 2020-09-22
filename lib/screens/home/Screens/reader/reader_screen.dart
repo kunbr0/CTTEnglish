@@ -13,6 +13,9 @@ import 'package:cttenglish/constants.dart';
 import '../../../../constants.dart';
 import './articleContent.dart';
 
+import 'package:cttenglish/models/news_sentence.dart';
+
+
 class ReaderScreen extends StatefulWidget {
   final String data;
   ReaderScreen({Key key, @required this.data}) : super(key: key);
@@ -31,7 +34,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     var url = articleUrl;
-
+    debugPrint(url);
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
 
@@ -115,6 +118,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
     //         .toList());
 
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Reader Screen'),
@@ -135,6 +139,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
             if (!snapshot.hasData) {
               return Text('Loading...');
             }
+
+            final kSentences = new KSentences(snapshot.data.content);
+            
+            
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(14.0),
@@ -166,14 +174,19 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             fontWeight: FontWeight.bold),
                       ),
                     ),
-                    snapshot.data.content != null
-                        ? Html(data: snapshot.data.content, style: {
-                            "p": Style(
-                              fontSize: FontSize.larger,
-                            ),
-                            "img": Style()
-                          })
-                        : Container(height: 0)
+                    // snapshot.data.content != null
+                    //     ? Html(data: snapshot.data.content, style: {
+                    //         "p": Style(
+                    //           fontSize: FontSize.larger,
+                    //         ),
+                    //         "img": Style(
+                              
+                    //         )
+                    //       })
+                    //     : Container(height: 0)
+                    Column(
+                      children: kSentences.getAllTextContent(),
+                    )
                   ],
                 ),
               ),
