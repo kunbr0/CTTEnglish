@@ -127,7 +127,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(elm.enMeaning,
+                                  child: Text(snapshot.data[index].enMeaning,
                                       style: TextStyle(fontSize: 15.75)),
                                 ),
                               ],
