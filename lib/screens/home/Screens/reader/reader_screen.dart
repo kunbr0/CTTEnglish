@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
+import 'package:cttenglish/models/Translator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,12 +11,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/style.dart';
+import 'package:translator/translator.dart';
 
 import 'package:cttenglish/constants.dart';
 import '../../../../constants.dart';
 import './articleContent.dart';
-
 import 'package:cttenglish/models/news_sentence.dart';
+import 'package:cttenglish/utils/sleep.dart';
+
+import 'package:cttenglish/shared/round_box_decoration.dart';
 
 class ReaderScreen extends StatefulWidget {
   final String data;
@@ -29,6 +34,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   static Color backgroundColor = Color.fromRGBO(38, 38, 38, 0.4);
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
+  final translator = GoogleTranslator();
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
@@ -47,6 +53,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
         content: dataResponse['content'],
         thumbnailUrl: dataResponse['thumbnail_url'],
       );
+
+      await uSleep(1000);
+
       articleContentStream.sink.add(artContent);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -72,7 +81,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void initState() {
     super.initState();
     fontSize = fontSize ?? 0.0;
-    _ReaderScreenState.backgroundColor = _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
+    _ReaderScreenState.backgroundColor =
+        _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
+
     getNewspaper();
   }
 
@@ -99,28 +110,74 @@ class _ReaderScreenState extends State<ReaderScreen> {
           });
     }
 
-    void _showWordMeaning(String data, BuildContext screenContext) {
+    void _showWordMeaning(String data, BuildContext screenContext) async {
+      Translation meaning =
+          await translator.translate(data, from: 'en', to: 'vi');
+
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           elevation: 10,
           builder: (context) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               height: MediaQuery.of(context).size.height * 0.7,
-              child: WordMeaningView(
-                word: data,
+              child: SizedBox.expand(
+                child: SingleChildScrollView(
+                  child: Wrap(children: [
+                    Center(
+                        child: Text(data,
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.red))),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 12),
+                        RoundBoxDecoration(
+                            child: Row(
+                          children: [
+                            Text("Meaning: ",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red)),
+                            Text(meaning.toString(),
+                                style: TextStyle(fontSize: 17))
+                          ],
+                        )),
+                        SizedBox(height: 20),
+                        RoundBoxDecoration(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Example: ",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red)),
+                              SizedBox(height: 10),
+                              WordMeaningView(
+                                word: data,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ]),
+                ),
               ),
             );
           });
     }
 
     void onTapWord(String word) {
-      debugPrint(word);
-      debugPrint(MediaQuery.of(context).size.height.toString());
+      // debugPrint(word);
+      // debugPrint(MediaQuery.of(context).size.height.toString());
       _showWordMeaning(word, context);
     }
-    
 
     this.kSentences.onCallback(onTapWord);
     // KSentence sentence = new KSentence(

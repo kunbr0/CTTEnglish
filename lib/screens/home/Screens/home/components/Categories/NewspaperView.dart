@@ -138,8 +138,6 @@ class _NewspaperViewState extends State<NewspaperView> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                // Row(
-                                //   children: [
                                 Text(
                                   snapshot.data[index].title,
                                   style: TextStyle(
@@ -153,10 +151,7 @@ class _NewspaperViewState extends State<NewspaperView> {
                                         new DateTime.fromMillisecondsSinceEpoch(
                                             snapshot.data[index].publishTime *
                                                 1000)),
-                                    style: TextStyle(color: Color(0xff696969)))
-                                // ],
-                                // )
-                                ,
+                                    style: TextStyle(color: Color(0xff696969))),
                                 SizedBox(height: 10),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
