@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cttenglish/models/Translator.dart';
+import 'package:cttenglish/services/replace.dart';
+import 'package:cttenglish/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,7 +33,7 @@ class ReaderScreen extends StatefulWidget {
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
   static double fontSize = 19.0;
-  static Color backgroundColor = Color.fromRGBO(38, 38, 38, 0.4);
+  static Color backgroundColor = cBackgroundColor;
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
   final translator = GoogleTranslator();
@@ -126,11 +128,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
                 child: SingleChildScrollView(
                   child: Wrap(children: [
                     Center(
-                        child: Text(data,
+                        child: Text(
+                            replaceList(
+                                data, [".", ",", '"', "!", "?", "'"], ""),
                             style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.red))),
+                                color: kTextColor))),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -142,7 +146,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.red)),
+                                    color: kTextColor)),
                             Text(meaning.toString(),
                                 style: TextStyle(fontSize: 17))
                           ],
@@ -156,7 +160,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.red)),
+                                      color: kTextColor)),
                               SizedBox(height: 10),
                               WordMeaningView(
                                 word: data,
@@ -164,6 +168,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             ],
                           ),
                         ),
+                        SizedBox(height: 10),
                       ],
                     )
                   ]),
@@ -190,8 +195,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reader Screen'),
-        backgroundColor: Colors.blue,
+        title: Center(child: Text('CTTEnglish')),
+        backgroundColor: kPrimaryColor,
         actions: [
           IconButton(
             icon: SvgPicture.asset(
@@ -206,7 +211,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
           stream: articleContentStream.stream,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Text('Loading...');
+              return Center(
+                  child: CircularProgressIndicator(
+                backgroundColor: kPrimaryColor,
+              ));
             }
 
             this.kSentences = new KSentences.initData(snapshot.data.content);
@@ -239,21 +247,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         child: Text(
                           snapshot.data.title,
                           style: TextStyle(
-                              color: cArticleTitle,
+                              color: kTextColor,
                               fontSize: 23,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      // snapshot.data.content != null
-                      //     ? Html(data: snapshot.data.content, style: {
-                      //         "p": Style(
-                      //           fontSize: FontSize.larger,
-                      //         ),
-                      //         "img": Style(
-
-                      //         )
-                      //       })
-                      //     : Container(height: 0)
                       Container(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

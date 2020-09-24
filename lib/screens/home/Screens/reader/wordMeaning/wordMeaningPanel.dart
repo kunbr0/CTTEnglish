@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cttenglish/utils/sleep.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -6,6 +7,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 
 import './WordMeaning.dart';
+import 'package:cttenglish/constants.dart';
 
 class WordMeaningView extends StatefulWidget {
   final String word;
@@ -22,9 +24,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
   final wordMeaningStream = StreamController<List<WordMeaning>>();
 
   void getWordMeaning() async {
-    // This example uses the Google Books API to search for books about http.
-    // https://developers.google.com/books/docs/overview
-    var url = 'https://api.kunbr0.com/en-vi.php?kInput=$data';
+    var url = '$kunbr0Url?kInput=$data';
 
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
@@ -40,6 +40,9 @@ class _WordMeaningViewState extends State<WordMeaningView> {
       }).toList();
 
       print('Get wordmeaning successfully .');
+
+      await uSleep(500);
+
       wordMeaningStream.sink.add(sentences);
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -66,79 +69,78 @@ class _WordMeaningViewState extends State<WordMeaningView> {
         stream: wordMeaningStream.stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Text('Loading...');
+            return Center(
+                child: CircularProgressIndicator(
+              backgroundColor: kPrimaryColor,
+            ));
           }
           return SingleChildScrollView(
-            child: ListView.builder(
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  // snapshot.data.map<Widget>((elm) {
-                  return Container(
-                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: snapshot.data.map<Widget>((elm) {
+                return Container(
+                    margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    decoration: BoxDecoration(
+                        // border: Border.all(width: 1, color: Colors.blue[200])
+                        ),
+                    child: Container(
                       decoration: BoxDecoration(
-                          // border: Border.all(width: 1, color: Colors.blue[200])
-                          ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(width: 2.0, color: Colors.amber),
-                          ),
-                          color: Colors.white,
+                        border: Border(
+                          bottom:
+                              BorderSide(width: 2.0, color: kPrimaryLightColor),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(width: 5),
-                                    Icon(Icons.star),
-                                    Text("English: ",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18)),
-                                  ],
-                                ),
-                                Html(
-                                    data: snapshot.data[index].viMeaning,
-                                    style: {
-                                      "*": Style(fontSize: FontSize.large),
-                                      "em": Style(
-                                          fontSize: FontSize.large,
-                                          fontStyle: FontStyle.italic),
-                                    }),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(width: 5),
-                                    Icon(Icons.star),
-                                    Text("Vietnamese: ",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18)),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(snapshot.data[index].enMeaning,
-                                      style: TextStyle(fontSize: 15.75)),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                          ],
-                        ),
-                      ));
-                }
-                // children: ).toList(),
-                ),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: 5),
+                                  Icon(Icons.star),
+                                  Text("English: ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18)),
+                                ],
+                              ),
+                              Html(data: elm.viMeaning, style: {
+                                "*": Style(fontSize: FontSize.large),
+                                "em": Style(
+                                    fontSize: FontSize.large,
+                                    fontStyle: FontStyle.italic),
+                              }),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: 5),
+                                  Icon(Icons.star),
+                                  Text("Vietnamese: ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18)),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(elm.enMeaning,
+                                    style: TextStyle(fontSize: 15.75)),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ));
+              }).toList(),
+            ),
           );
         });
   }
