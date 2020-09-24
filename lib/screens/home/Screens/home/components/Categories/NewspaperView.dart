@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 import 'Newspaper.dart';
+import 'package:cttenglish/constants.dart';
 
 // import '../../../../../../constants.dart';
 // import 'package:cttenglish/constants.dart';
@@ -141,7 +142,7 @@ class _NewspaperViewState extends State<NewspaperView> {
                                 Text(
                                   snapshot.data[index].title,
                                   style: TextStyle(
-                                      color: Color(0xff911f20),
+                                      color: cArticleTitle,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -151,7 +152,9 @@ class _NewspaperViewState extends State<NewspaperView> {
                                         new DateTime.fromMillisecondsSinceEpoch(
                                             snapshot.data[index].publishTime *
                                                 1000)),
-                                    style: TextStyle(color: Color(0xff696969))),
+                                    style: TextStyle(
+                                        color: cArticleTime,
+                                        fontStyle: FontStyle.italic)),
                                 SizedBox(height: 10),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
