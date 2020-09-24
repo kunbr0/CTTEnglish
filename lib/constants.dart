@@ -10,3 +10,4 @@ const cArticleTime = Color(0xff696969);
 const cBackgroundColor = Colors.white;
 
 const kunbr0Url = 'https://api.kunbr0.com/en-vi.php';
+const vnEndpoint = 'https://api3.vnexpress.net/api';

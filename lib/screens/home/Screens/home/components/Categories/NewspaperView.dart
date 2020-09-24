@@ -30,7 +30,7 @@ class _NewspaperViewState extends State<NewspaperView> {
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     var url =
-        'https://api3.vnexpress.net/api/article?type=get_rule_2&cate_id=1003894&limit=60&offset=0&option=video_autoplay&app_id=9e304d';
+        '$vnEndpoint/article?type=get_rule_2&cate_id=1003894&limit=60&offset=0&option=video_autoplay&app_id=9e304d';
 
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
@@ -49,7 +49,7 @@ class _NewspaperViewState extends State<NewspaperView> {
             thumbnailUrl: news['thumbnail_url'],
             publishTime: news['publish_time'],
             urlFull:
-                'https://api3.vnexpress.net/api/article?type=get_full&article_id=$newsId&app_id=9e304d');
+                '$vnEndpoint/article?type=get_full&article_id=$newsId&app_id=9e304d');
       }).toList();
 
       List<Newspaper> filterArticles =
@@ -83,7 +83,6 @@ class _NewspaperViewState extends State<NewspaperView> {
           if (!snapshot.hasData) {
             return Text('Loading...');
           }
-          // return Text("fd");
           return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
