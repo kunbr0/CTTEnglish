@@ -24,6 +24,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
   final wordMeaningStream = StreamController<List<WordMeaning>>();
 
   void getWordMeaning() async {
+    await uSleep(500);
     var url = '$kunbr0Url?kInput=$data';
 
     // Await the http get response, then decode the json-formatted response.
@@ -40,8 +41,6 @@ class _WordMeaningViewState extends State<WordMeaningView> {
       }).toList();
 
       print('Get wordmeaning successfully .');
-
-      await uSleep(500);
 
       wordMeaningStream.sink.add(sentences);
     } else {
@@ -104,14 +103,12 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                                   Text("English: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 18)),
+                                          fontSize: 20)),
                                 ],
                               ),
                               Html(data: elm.viMeaning, style: {
-                                "*": Style(fontSize: FontSize.large),
-                                "em": Style(
-                                    fontSize: FontSize.large,
-                                    fontStyle: FontStyle.italic),
+                                "*": Style(fontSize: FontSize(20)),
+                                "em": Style(fontStyle: FontStyle.italic),
                               }),
                             ],
                           ),
@@ -131,7 +128,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(elm.enMeaning,
-                                    style: TextStyle(fontSize: 15.75)),
+                                    style: TextStyle(fontSize: 20)),
                               ),
                             ],
                           ),

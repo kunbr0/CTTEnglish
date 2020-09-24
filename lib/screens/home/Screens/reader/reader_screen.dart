@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cttenglish/models/Translator.dart';
 import 'package:cttenglish/services/replace.dart';
-import 'package:cttenglish/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,6 +13,7 @@ import 'dart:convert' as convert;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/style.dart';
 import 'package:translator/translator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:cttenglish/constants.dart';
 import '../../../../constants.dart';
@@ -36,7 +36,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
   static Color backgroundColor = cBackgroundColor;
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
-  final translator = GoogleTranslator();
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
@@ -44,7 +43,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     var url = articleUrl;
-    debugPrint(url);
+
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
 
@@ -113,9 +112,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
 
     void _showWordMeaning(String data, BuildContext screenContext) async {
-      Translation meaning =
-          await translator.translate(data, from: 'en', to: 'vi');
-
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -130,7 +126,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     Center(
                         child: Text(
                             replaceList(
-                                data, [".", ",", '"', "!", "?", "'"], ""),
+                                    data, [".", ",", '"', "!", "?", "'"], "")
+                                .toLowerCase(),
                             style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w800,
@@ -144,11 +141,45 @@ class _ReaderScreenState extends State<ReaderScreen> {
                           children: [
                             Text("Meaning: ",
                                 style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: kTextColor)),
-                            Text(meaning.toString(),
-                                style: TextStyle(fontSize: 17))
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: kTextColor,
+                                )),
+                            FutureBuilder<Translation>(
+                              future: () async {
+                                final translator = GoogleTranslator();
+                                Future<Translation> meaning = translator
+                                    .translate(data, from: 'en', to: 'vi');
+                                return meaning;
+                              }(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text("No internet connection!"),
+                                  );
+                                }
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.toString(),
+                                    style: TextStyle(fontSize: 20),
+                                  );
+                                }
+                                return Center(
+                                    child: SpinKitThreeBounce(
+                                  size: 15.0,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: Colors.black),
+                                    );
+                                  },
+                                ));
+                              },
+                              // child: ,
+                            )
                           ],
                         )),
                         SizedBox(height: 20),
@@ -158,8 +189,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             children: [
                               Text("Example: ",
                                   style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
                                       color: kTextColor)),
                               SizedBox(height: 10),
                               WordMeaningView(
@@ -195,7 +226,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('CTTEnglish')),
+        title: Center(
+            child: Text(
+          'CTTEnglish',
+          style: TextStyle(
+              color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
+        )),
         backgroundColor: kPrimaryColor,
         actions: [
           IconButton(
