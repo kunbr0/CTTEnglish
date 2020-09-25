@@ -61,8 +61,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
         thumbnailUrl: dataResponse['thumbnail_url'],
       );
 
+      await uSleep(700);
       articleContentStream.sink.add(artContent);
-      await uSleep(1000);
+      await uSleep(300);
       setState(() {
 
         this.isLoading = false;
@@ -260,7 +261,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   IndexedStack(
                     index: this.isLoading ? 0 : 1,
                     children: [
-                      Container(
+                      this.isLoading ? Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height - appBar.preferredSize.height,
                         //color: Colors.red[100],
@@ -269,7 +270,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             backgroundColor: kPrimaryColor,
                           )
                         ),
-                      ),
+                      ) : SizedBox(),
                       StreamBuilder(
                         stream: articleContentStream.stream,
                         builder: (context, snapshot) {
