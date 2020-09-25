@@ -36,10 +36,16 @@ class _ReaderScreenState extends State<ReaderScreen> {
   static Color backgroundColor = cBackgroundColor;
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
+  static const List<String> redundantString = [".", ",", '"', "!", "?", "'"];
+  bool isLoading;
+
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
   void getNewspaper() async {
+    setState(() {
+      this.isLoading = true;
+    });
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     var url = articleUrl;
@@ -55,9 +61,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
         thumbnailUrl: dataResponse['thumbnail_url'],
       );
 
-      await uSleep(1000);
-
       articleContentStream.sink.add(artContent);
+      await uSleep(1000);
+      setState(() {
+
+        this.isLoading = false;
+      });
     } else {
       print('Request failed with status: ${response.statusCode}.');
       articleContentStream.sink
@@ -81,7 +90,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
   @override
   void initState() {
     super.initState();
-    fontSize = fontSize ?? 0.0;
+    _ReaderScreenState.fontSize = fontSize ?? 0.0;
+    this.isLoading = isLoading ?? false;
     _ReaderScreenState.backgroundColor =
         _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
 
@@ -126,7 +136,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     Center(
                         child: Text(
                             replaceList(
-                                    data, [".", ",", '"', "!", "?", "'"], "")
+                                    data, _ReaderScreenState.redundantString, "")
                                 .toLowerCase(),
                             style: TextStyle(
                                 fontSize: 40,
@@ -223,83 +233,102 @@ class _ReaderScreenState extends State<ReaderScreen> {
     //         .map((word) =>
     //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
     //         .toList());
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-            child: Text(
-          'CTTEnglish',
-          style: TextStyle(
-              color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
-        )),
-        backgroundColor: kPrimaryColor,
-        actions: [
-          IconButton(
-            icon: SvgPicture.asset(
-              "assets/icons/settings.svg",
-              width: 25,
-            ),
-            onPressed: () => _showSettingsPanel(),
+    AppBar appBar = AppBar(
+      title: Center(
+          child: Text(
+        'CTTEnglish',
+        style: TextStyle(
+            color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
+      )),
+      backgroundColor: kPrimaryColor,
+      actions: [
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/settings.svg",
+            width: 25,
           ),
-        ],
-      ),
-      body: StreamBuilder(
-          stream: articleContentStream.stream,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                  child: CircularProgressIndicator(
-                backgroundColor: kPrimaryColor,
-              ));
-            }
-
-            this.kSentences = new KSentences.initData(snapshot.data.content);
-
-            return Container(
+          onPressed: () => _showSettingsPanel(),
+        ),
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
+      body: Container(
               color: _ReaderScreenState.backgroundColor,
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Column(
+                child: 
+                  IndexedStack(
+                    index: this.isLoading ? 0 : 1,
                     children: [
-                      CachedNetworkImage(
-                        height: 200,
-                        width: 360,
-                        imageUrl: snapshot.data.thumbnailUrl,
-                        imageBuilder: (context, imageProvider) => Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
-                      SizedBox(height: 5),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          snapshot.data.title,
-                          style: TextStyle(
-                              color: kTextColor,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
                       Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: kSentences.getAllTextContent(),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height - appBar.preferredSize.height,
+                        //color: Colors.red[100],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            backgroundColor: kPrimaryColor,
+                          )
                         ),
-                      )
+                      ),
+                      StreamBuilder(
+                        stream: articleContentStream.stream,
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            this.kSentences = new KSentences.initData(snapshot.data.content);
+                            return Padding(
+                              padding: const EdgeInsets.all(14.0) ,
+                              child: 
+                                Column(
+                                children: [
+                                  CachedNetworkImage(
+                                    height: 200,
+                                    width: 360,
+                                    imageUrl: snapshot.data.thumbnailUrl,
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      snapshot.data.title,
+                                      style: TextStyle(
+                                          color: kTextColor,
+                                          fontSize: 23,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: kSentences.getAllTextContent(),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            );
+                      
+                          }
+                          return SizedBox();
+                        }
+                      ),
                     ],
                   ),
-                ),
               ),
-            );
-          }),
+            )
+          
+            
+
+            
+          
     );
   }
 }
