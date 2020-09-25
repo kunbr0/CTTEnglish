@@ -106,9 +106,11 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                                           fontSize: 20)),
                                 ],
                               ),
-                              Html(data: elm.viMeaning, style: {
+                              Html(data: elm.enMeaning, style: {
                                 "*": Style(fontSize: FontSize(20)),
-                                "em": Style(fontStyle: FontStyle.italic),
+                                "em": Style(
+                                    fontStyle: FontStyle.italic,
+                                    color: kPrimaryColor),
                               }),
                             ],
                           ),
@@ -127,7 +129,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(elm.enMeaning,
+                                child: Text(elm.viMeaning,
                                     style: TextStyle(fontSize: 20)),
                               ),
                             ],
@@ -142,4 +144,3 @@ class _WordMeaningViewState extends State<WordMeaningView> {
         });
   }
 }
-

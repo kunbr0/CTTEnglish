@@ -5,7 +5,8 @@ class _KWord {
   String data;
   GestureDetector word;
   static double fontSize = 18;
-  static Function onTapWord = (){};
+  static Function onTapWord = () {};
+
   _KWord(String str) {
     this.data = str;
     this.word = GestureDetector(
@@ -29,7 +30,6 @@ class _KSentence {
   List<_KWord> listWord = new List<_KWord>();
 
   void _mapDataToListWord() {
-//    debugPrint("Beginnnn" + this._data + "Endddddd");
     _data.split(" ").forEach((element) {
       final word = new _KWord(element);
       listWord.add(word);
@@ -46,11 +46,12 @@ class _KSentence {
 class KSentences extends _KSentence {
   String _data;
   List<_KSentence> listSentence = new List<_KSentence>();
-  static Function callback;
+  static Function onTranslateButtonPressed = () {};
 
   void _mapDataToListSentence() {
     final htmlDocument = parse(_data);
     final sentences = htmlDocument.querySelectorAll("p");
+
     for (final sentence in sentences) {
       _KSentence stringSentence = new _KSentence.init(sentence.text);
       listSentence.add(stringSentence);
@@ -63,19 +64,15 @@ class KSentences extends _KSentence {
 
   KSentences();
 
-  onCallback(Function f) {
-    KSentences.callback = f;
-    _KWord.onTapWord = f;
+  onCallback(Function onTapWord, Function onTranslateButtonPressed) {
+    _KWord.onTapWord = onTapWord;
+    KSentences.onTranslateButtonPressed = onTranslateButtonPressed;
   }
 
-  KSentences.initData(String data){
+  KSentences.initData(String data) {
     this._data = data;
     _mapDataToListSentence();
   }
-
-  
-
-
 
   List<Widget> getAllTextContent() {
     List<Widget> result = new List<Widget>();
@@ -90,6 +87,13 @@ class KSentences extends _KSentence {
         height: 20,
       ));
       result.add(Wrap(children: sente));
+      result.add(FlatButton.icon(
+          onPressed: () => onTranslateButtonPressed(sentence._data),
+          icon: Icon(Icons.search),
+          label: Text(
+            "Translate this paragraph",
+            style: TextStyle(fontSize: 18),
+          )));
     });
     return result;
   }

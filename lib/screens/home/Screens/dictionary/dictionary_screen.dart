@@ -25,7 +25,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
 
   bool loading;
   String input;
-  var meaning;
+  String meaning;
   String dictionary;
 
   @override
@@ -81,7 +81,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   final TextStyle dropdownMenuItem =
-      TextStyle(color: Colors.black, fontSize: 18);
+      TextStyle(color: Colors.black, fontSize: 24);
 
   final primary = kPrimaryColor;
   final secondary = Color(0xfff29a94);
@@ -243,10 +243,11 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                       width: 5,
                     ),
                     Html(data: sentenceList[index].fields.en, style: {
+                      "*": Style(fontSize: FontSize(20)),
                       "em": Style(
-                          color: Colors.red,
-                          letterSpacing: .3,
-                          fontSize: FontSize.medium),
+                        color: kPrimaryColor,
+                        letterSpacing: .3,
+                      ),
                     }),
                   ],
                 ),
@@ -259,10 +260,11 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                       width: 5,
                     ),
                     Html(data: sentenceList[index].fields.vi, style: {
+                      "*": Style(fontSize: FontSize(20)),
                       "em": Style(
-                          color: Colors.red,
-                          letterSpacing: .3,
-                          fontSize: FontSize.medium),
+                        color: kPrimaryColor,
+                        letterSpacing: .3,
+                      ),
                     }),
                   ],
                 ),

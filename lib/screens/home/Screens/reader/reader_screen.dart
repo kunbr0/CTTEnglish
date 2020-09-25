@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cttenglish/models/Translator.dart';
-import 'package:cttenglish/services/replace.dart';
+import 'package:cttenglish/services/remove_special_charater.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,9 +36,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
   static Color backgroundColor = cBackgroundColor;
   KSentences kSentences = new KSentences();
   final articleContentStream = StreamController<ArticleContent>();
-  static const List<String> redundantString = [".", ",", '"', "!", "?", "'"];
+  static const List<String> redundantString = [".", ",", '"', "!", "?", "' "];
   bool isLoading;
-
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
@@ -65,7 +64,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
       articleContentStream.sink.add(artContent);
       await uSleep(300);
       setState(() {
-
         this.isLoading = false;
       });
     } else {
@@ -122,7 +120,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
           });
     }
 
-    void _showWordMeaning(String data, BuildContext screenContext) async {
+    void cShowModalBottomSheet(Widget child) {
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -130,103 +128,156 @@ class _ReaderScreenState extends State<ReaderScreen> {
           builder: (context) {
             return Container(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              height: MediaQuery.of(context).size.height * 0.7,
-              child: SizedBox.expand(
-                child: SingleChildScrollView(
-                  child: Wrap(children: [
-                    Center(
-                        child: Text(
-                            replaceList(
-                                    data, _ReaderScreenState.redundantString, "")
-                                .toLowerCase(),
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w800,
-                                color: kTextColor))),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 12),
-                        RoundBoxDecoration(
-                            child: Row(
-                          children: [
-                            Text("Meaning: ",
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: kTextColor,
-                                )),
-                            FutureBuilder<Translation>(
-                              future: () async {
-                                final translator = GoogleTranslator();
-                                Future<Translation> meaning = translator
-                                    .translate(data, from: 'en', to: 'vi');
-                                return meaning;
-                              }(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasError) {
-                                  return Center(
-                                    child: Text("No internet connection!"),
-                                  );
-                                }
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.toString(),
-                                    style: TextStyle(fontSize: 20),
-                                  );
-                                }
-                                return Center(
-                                    child: SpinKitThreeBounce(
-                                  size: 15.0,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return DecoratedBox(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: Colors.black),
-                                    );
-                                  },
-                                ));
-                              },
-                              // child: ,
-                            )
-                          ],
-                        )),
-                        SizedBox(height: 20),
-                        RoundBoxDecoration(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Example: ",
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: kTextColor)),
-                              SizedBox(height: 10),
-                              WordMeaningView(
-                                word: data,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    )
-                  ]),
-                ),
-              ),
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: SizedBox.expand(child: child),
             );
           });
     }
 
+    void _showWordMeaning(String data, BuildContext screenContext) async {
+      cShowModalBottomSheet(
+        Wrap(children: [
+          Center(
+              child: Text(
+                  removeSpecialCharater(
+                          data, _ReaderScreenState.redundantString, "")
+                      .toLowerCase(),
+                  style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
+                      color: kTextColor))),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 12),
+              RoundBoxDecoration(
+                  child: Row(
+                children: [
+                  Text("Meaning: ",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: kTextColor,
+                      )),
+                  FutureBuilder<Translation>(
+                    future: () async {
+                      final translator = GoogleTranslator();
+                      Future<Translation> meaning =
+                          translator.translate(data, from: 'en', to: 'vi');
+                      return meaning;
+                    }(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text("No internet connection!"),
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data.toString(),
+                          style: TextStyle(fontSize: 20),
+                        );
+                      }
+                      return Center(
+                          child: SpinKitThreeBounce(
+                        size: 15.0,
+                        itemBuilder: (BuildContext context, int index) {
+                          return DecoratedBox(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.black),
+                          );
+                        },
+                      ));
+                    },
+                  )
+                ],
+              )),
+              SizedBox(height: 20),
+              RoundBoxDecoration(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Example: ",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: kTextColor)),
+                    SizedBox(height: 10),
+                    WordMeaningView(
+                      word: data,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+          )
+        ]),
+      );
+    }
+
+    void _showParagraphMeaning(
+        String paragraph, BuildContext screenContext) async {
+      cShowModalBottomSheet(
+        Wrap(children: [
+          RoundBoxDecoration(
+              child: Column(
+            children: [
+              Text("Meaning: ",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: kTextColor,
+                  )),
+              FutureBuilder<Translation>(
+                future: () async {
+                  final translator = GoogleTranslator();
+                  Future<Translation> meaning =
+                      translator.translate(paragraph, from: 'en', to: 'vi');
+                  return meaning;
+                }(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("No internet connection!"),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    return Html(data: snapshot.data.toString(), style: {
+                      "*": Style(fontSize: FontSize(20)),
+                    });
+                  }
+                  return Center(
+                      child: SpinKitThreeBounce(
+                    size: 15.0,
+                    itemBuilder: (BuildContext context, int index) {
+                      return DecoratedBox(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.black),
+                      );
+                    },
+                  ));
+                },
+              )
+            ],
+          )),
+          SizedBox(height: 20)
+        ]),
+      );
+    }
+
     void onTapWord(String word) {
-      // debugPrint(word);
-      // debugPrint(MediaQuery.of(context).size.height.toString());
       _showWordMeaning(word, context);
     }
 
-    this.kSentences.onCallback(onTapWord);
+    void onTranslateButtonPressed(String paragraph) {
+      _showParagraphMeaning(paragraph, context);
+      // print("Hello");
+    }
+
+    this.kSentences.onCallback(onTapWord, onTranslateButtonPressed);
     // KSentence sentence = new KSentence(
     //     data: data,
     //     sentence: data
@@ -253,83 +304,78 @@ class _ReaderScreenState extends State<ReaderScreen> {
       ],
     );
     return Scaffold(
-      appBar: appBar,
-      body: Container(
-              color: _ReaderScreenState.backgroundColor,
-              child: SingleChildScrollView(
-                child: 
-                  IndexedStack(
-                    index: this.isLoading ? 0 : 1,
-                    children: [
-                      this.isLoading ? Container(
+        appBar: appBar,
+        body: Container(
+          color: _ReaderScreenState.backgroundColor,
+          child: SingleChildScrollView(
+            child: IndexedStack(
+              index: this.isLoading ? 0 : 1,
+              children: [
+                this.isLoading
+                    ? Container(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height - appBar.preferredSize.height,
+                        height: MediaQuery.of(context).size.height -
+                            appBar.preferredSize.height,
                         //color: Colors.red[100],
                         child: Center(
-                          child: CircularProgressIndicator(
-                            backgroundColor: kPrimaryColor,
-                          )
-                        ),
-                      ) : SizedBox(),
-                      StreamBuilder(
-                        stream: articleContentStream.stream,
-                        builder: (context, snapshot) {
-                          if(snapshot.hasData){
-                            this.kSentences = new KSentences.initData(snapshot.data.content);
-                            return Padding(
-                              padding: const EdgeInsets.all(14.0) ,
-                              child: 
-                                Column(
-                                children: [
-                                  CachedNetworkImage(
-                                    height: 200,
-                                    width: 360,
-                                    imageUrl: snapshot.data.thumbnailUrl,
-                                    imageBuilder: (context, imageProvider) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        image: DecorationImage(
-                                          image: imageProvider,
-                                          fit: BoxFit.cover,
-                                        ),
+                            child: CircularProgressIndicator(
+                          backgroundColor: kPrimaryColor,
+                        )),
+                      )
+                    : SizedBox(),
+                StreamBuilder(
+                    stream: articleContentStream.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        this.kSentences =
+                            new KSentences.initData(snapshot.data.content);
+                        return Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Column(
+                              children: [
+                                CachedNetworkImage(
+                                  height: 200,
+                                  width: 360,
+                                  imageUrl: snapshot.data.thumbnailUrl,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
                                   ),
-                                  SizedBox(height: 5),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      snapshot.data.title,
-                                      style: TextStyle(
-                                          color: kTextColor,
-                                          fontSize: 23,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
+                                SizedBox(height: 5),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    snapshot.data.title,
+                                    style: TextStyle(
+                                        color: kTextColor,
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                  Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: kSentences.getAllTextContent(),
-                                    ),
+                                ),
+                                Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: kSentences.getAllTextContent(),
                                   ),
-                                ],
-                              )
-                            );
-                      
-                          }
-                          return SizedBox();
-                        }
-                      ),
-                    ],
-                  ),
-              ),
-            )
-          
-            
-
-            
-          
-    );
+                                ),
+                              ],
+                            ));
+                      }
+                      return SizedBox();
+                    }),
+              ],
+            ),
+          ),
+        ));
   }
 }
