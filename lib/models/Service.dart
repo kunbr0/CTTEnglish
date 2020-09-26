@@ -3,10 +3,12 @@
 import 'dart:convert';
 import 'package:cttenglish/models/Translator.dart';
 import 'package:http/http.dart' as http;
+
 import 'Sentences.dart';
+import 'package:cttenglish/constants.dart';
 
 class Services {
-  static const String url = 'https://api.kunbr0.com/en-vi.php?kInput=';
+  static const String url = '$kunbr0Url?kInput=';
 
   static Future<List<Sentences>> getSentences(String query) async {
     List<Sentences> list = List<Sentences>();
