@@ -1,14 +1,27 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+import 'package:cttenglish/models/Translator.dart';
+import 'package:cttenglish/services/replace.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
-import 'package:cttenglish/models/sentence.dart';
-import './articleContent.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_html/style.dart';
+import 'package:translator/translator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'package:cttenglish/constants.dart';
+import '../../../../constants.dart';
+import './articleContent.dart';
+import 'package:cttenglish/models/news_sentence.dart';
+import 'package:cttenglish/utils/sleep.dart';
+
+import 'package:cttenglish/shared/round_box_decoration.dart';
 
 class ReaderScreen extends StatefulWidget {
   final String data;
@@ -19,44 +32,70 @@ class ReaderScreen extends StatefulWidget {
 
 class _ReaderScreenState extends State<ReaderScreen> {
   final String articleUrl;
-  double fontSize = 19.0;
-  final articleContentStream = StreamController <ArticleContent>();
+  static double fontSize = 19.0;
+  static Color backgroundColor = cBackgroundColor;
+  KSentences kSentences = new KSentences();
+  final articleContentStream = StreamController<ArticleContent>();
+  static const List<String> redundantString = [".", ",", '"', "!", "?", "'"];
+  bool isLoading;
+
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
   void getNewspaper() async {
+    setState(() {
+      this.isLoading = true;
+    });
     // This example uses the Google Books API to search for books about http.
     // https://developers.google.com/books/docs/overview
     var url = articleUrl;
 
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url);
-    
+
     if (response.statusCode == 200) {
       var dataResponse = convert.jsonDecode(response.body)['data'];
-      debugPrint(response.toString());
       var artContent = new ArticleContent(
         title: dataResponse['title'],
-        content: dataResponse['content']
+        content: dataResponse['content'],
+        thumbnailUrl: dataResponse['thumbnail_url'],
       );
 
-      print('Get wordmeaning successfully .');
+      await uSleep(700);
       articleContentStream.sink.add(artContent);
+      await uSleep(300);
+      setState(() {
+
+        this.isLoading = false;
+      });
     } else {
       print('Request failed with status: ${response.statusCode}.');
-      articleContentStream.sink.addError('Request failed with status: ${response.statusCode}.');
+      articleContentStream.sink
+          .addError('Request failed with status: ${response.statusCode}.');
     }
   }
+
   void _changeFontSize(double newFontSize) {
+    this.kSentences.onChangeFontSize(newFontSize);
     setState(() {
-      fontSize = newFontSize;
+      _ReaderScreenState.fontSize = newFontSize;
+    });
+  }
+
+  void _onChangeBackgroundColor(Color color) {
+    setState(() {
+      _ReaderScreenState.backgroundColor = color;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    fontSize = fontSize ?? 0.0;
+    _ReaderScreenState.fontSize = fontSize ?? 0.0;
+    this.isLoading = isLoading ?? false;
+    _ReaderScreenState.backgroundColor =
+        _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
+
     getNewspaper();
   }
 
@@ -65,8 +104,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     super.dispose();
     articleContentStream.close();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -79,33 +116,117 @@ class _ReaderScreenState extends State<ReaderScreen> {
               child: SettingsPanel(
                 fontSize: fontSize,
                 changeFontSize: _changeFontSize,
+                changeBackgroundColor: _onChangeBackgroundColor,
               ),
             );
           });
     }
 
-    void _showWordMeaning(String data, BuildContext screenContext) {
+    void _showWordMeaning(String data, BuildContext screenContext) async {
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           elevation: 10,
           builder: (context) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              height: MediaQuery.of(context).size.height*0.7,
-              child: WordMeaningView(
-                word: data,
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: SizedBox.expand(
+                child: SingleChildScrollView(
+                  child: Wrap(children: [
+                    Center(
+                        child: Text(
+                            replaceList(
+                                    data, _ReaderScreenState.redundantString, "")
+                                .toLowerCase(),
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w800,
+                                color: kTextColor))),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 12),
+                        RoundBoxDecoration(
+                            child: Row(
+                          children: [
+                            Text("Meaning: ",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: kTextColor,
+                                )),
+                            FutureBuilder<Translation>(
+                              future: () async {
+                                final translator = GoogleTranslator();
+                                Future<Translation> meaning = translator
+                                    .translate(data, from: 'en', to: 'vi');
+                                return meaning;
+                              }(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text("No internet connection!"),
+                                  );
+                                }
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.toString(),
+                                    style: TextStyle(fontSize: 20),
+                                  );
+                                }
+                                return Center(
+                                    child: SpinKitThreeBounce(
+                                  size: 15.0,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: Colors.black),
+                                    );
+                                  },
+                                ));
+                              },
+                              // child: ,
+                            )
+                          ],
+                        )),
+                        SizedBox(height: 20),
+                        RoundBoxDecoration(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Example: ",
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: kTextColor)),
+                              SizedBox(height: 10),
+                              WordMeaningView(
+                                word: data,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    )
+                  ]),
+                ),
               ),
             );
           });
     }
 
     void onTapWord(String word) {
-      debugPrint(word);
-      debugPrint(MediaQuery.of(context).size.height.toString());
+      // debugPrint(word);
+      // debugPrint(MediaQuery.of(context).size.height.toString());
       _showWordMeaning(word, context);
     }
 
+    this.kSentences.onCallback(onTapWord);
     // KSentence sentence = new KSentence(
     //     data: data,
     //     sentence: data
@@ -113,36 +234,102 @@ class _ReaderScreenState extends State<ReaderScreen> {
     //         .map((word) =>
     //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
     //         .toList());
-
+    AppBar appBar = AppBar(
+      title: Center(
+          child: Text(
+        'CTTEnglish',
+        style: TextStyle(
+            color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
+      )),
+      backgroundColor: kPrimaryColor,
+      actions: [
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/settings.svg",
+            width: 25,
+          ),
+          onPressed: () => _showSettingsPanel(),
+        ),
+      ],
+    );
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Reader Screen'),
-          backgroundColor: Colors.blue,
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset(
-                "assets/icons/settings.svg",
-                width: 25,
+      appBar: appBar,
+      body: Container(
+              color: _ReaderScreenState.backgroundColor,
+              child: SingleChildScrollView(
+                child: 
+                  IndexedStack(
+                    index: this.isLoading ? 0 : 1,
+                    children: [
+                      this.isLoading ? Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height - appBar.preferredSize.height,
+                        //color: Colors.red[100],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            backgroundColor: kPrimaryColor,
+                          )
+                        ),
+                      ) : SizedBox(),
+                      StreamBuilder(
+                        stream: articleContentStream.stream,
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            this.kSentences = new KSentences.initData(snapshot.data.content);
+                            return Padding(
+                              padding: const EdgeInsets.all(14.0) ,
+                              child: 
+                                Column(
+                                children: [
+                                  CachedNetworkImage(
+                                    height: 200,
+                                    width: 360,
+                                    imageUrl: snapshot.data.thumbnailUrl,
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      snapshot.data.title,
+                                      style: TextStyle(
+                                          color: kTextColor,
+                                          fontSize: 23,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: kSentences.getAllTextContent(),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            );
+                      
+                          }
+                          return SizedBox();
+                        }
+                      ),
+                    ],
+                  ),
               ),
-              onPressed: () => _showSettingsPanel(),
-            ),
-          ],
-        ),
-        body: StreamBuilder(
-          stream: articleContentStream.stream,
-          builder: (context, snapshot) {
-            if(!snapshot.hasData){
-              return Text('Loading...');
-            }
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  Html(data: snapshot.data.content,)
-                ],
-              ),
-            );
-          }
-        ),
+            )
+          
+            
+
+            
+          
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'components/drop_down.dart';
 import 'package:cttenglish/constants.dart';
+import 'package:cttenglish/shared/beautiful_appbar.dart';
 
 class DictionaryScreen extends StatefulWidget {
   DictionaryScreen({Key key}) : super(key: key);
@@ -96,41 +97,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
           child: Stack(
             children: <Widget>[
               buildMeaningList(context),
-              Container(
-                height: 110,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: primary,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30))),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        "Dictionary",
-                        style: TextStyle(color: Colors.white, fontSize: 24),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.filter_list,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              BeautifulAppBar(),
               Container(
                 child: Column(
                   children: [
@@ -262,13 +229,26 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  // schoolLists[index]['name'],
-                  sentenceList[index].fields.en,
-                  style: TextStyle(
-                      color: primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
+                // Text(
+                //   // schoolLists[index]['name'],
+                //   sentenceList[index].fields.en,
+                //   style: TextStyle(
+                //       color: primary,
+                //       fontWeight: FontWeight.bold,
+                //       fontSize: 18),
+                // ),
+                Wrap(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Html(data: sentenceList[index].fields.en, style: {
+                      "em": Style(
+                          color: Colors.red,
+                          letterSpacing: .3,
+                          fontSize: FontSize.medium),
+                    }),
+                  ],
                 ),
                 SizedBox(
                   height: 6,
