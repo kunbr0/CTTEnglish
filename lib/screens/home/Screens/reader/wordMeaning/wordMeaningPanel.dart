@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cttenglish/utils/sleep.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:flutter_html/flutter_html.dart';
@@ -68,10 +69,22 @@ class _WordMeaningViewState extends State<WordMeaningView> {
         stream: wordMeaningStream.stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
+            // return Center(
+            //     child: CircularProgressIndicator(
+            //   backgroundColor: kPrimaryColor,
+            // ));
             return Center(
-                child: CircularProgressIndicator(
-              backgroundColor: kPrimaryColor,
-            ));
+              child: SpinKitThreeBounce(
+                size: 15.0,
+                itemBuilder: (BuildContext context, int index) {
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: kPrimaryColor),
+                  );
+                },
+              )
+            );
           }
           return SingleChildScrollView(
             child: Column(
@@ -103,11 +116,11 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                                   Text("English: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 20)),
+                                          fontSize: 18)),
                                 ],
                               ),
                               Html(data: elm.enMeaning, style: {
-                                "*": Style(fontSize: FontSize(20)),
+                                "*": Style(fontSize: FontSize(18)),
                                 "em": Style(
                                     fontStyle: FontStyle.italic,
                                     color: kPrimaryColor),
@@ -130,7 +143,7 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(elm.viMeaning,
-                                    style: TextStyle(fontSize: 20)),
+                                    style: TextStyle(fontSize: 18)),
                               ),
                             ],
                           ),

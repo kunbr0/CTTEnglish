@@ -62,7 +62,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
       await uSleep(700);
       articleContentStream.sink.add(artContent);
-      await uSleep(300);
+      await uSleep(1300);
       setState(() {
         this.isLoading = false;
       });
@@ -120,22 +120,28 @@ class _ReaderScreenState extends State<ReaderScreen> {
           });
     }
 
-    void cShowModalBottomSheet(Widget child) {
+    void cShowModalBottomSheet(Widget kChild) {
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
           elevation: 10,
           builder: (context) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: SizedBox.expand(child: child),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: SizedBox.expand(
+                child: SingleChildScrollView(
+                  child: kChild,
+                )
+              
+              ),
             );
           });
     }
 
     void _showWordMeaning(String data, BuildContext screenContext) async {
       cShowModalBottomSheet(
+        
         Wrap(children: [
           Center(
               child: Text(
@@ -143,7 +149,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                           data, _ReaderScreenState.redundantString, "")
                       .toLowerCase(),
                   style: TextStyle(
-                      fontSize: 40,
+                      fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: kTextColor))),
           Column(
@@ -153,17 +159,20 @@ class _ReaderScreenState extends State<ReaderScreen> {
               RoundBoxDecoration(
                   child: Row(
                 children: [
-                  Text("Meaning: ",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: kTextColor,
-                      )),
+                  Text(
+                    "Meaning: ",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kTextColor,
+                    )
+                  ),
                   FutureBuilder<Translation>(
                     future: () async {
                       final translator = GoogleTranslator();
                       Future<Translation> meaning =
                           translator.translate(data, from: 'en', to: 'vi');
+                      await uSleep(700);
                       return meaning;
                     }(),
                     builder: (context, snapshot) {
@@ -185,7 +194,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                           return DecoratedBox(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.black),
+                                color: kPrimaryColor),
                           );
                         },
                       ));
@@ -217,24 +226,32 @@ class _ReaderScreenState extends State<ReaderScreen> {
       );
     }
 
+
     void _showParagraphMeaning(
         String paragraph, BuildContext screenContext) async {
       cShowModalBottomSheet(
-        Wrap(children: [
+        Column(children: [
+          SizedBox(height: 20),
+          RoundBoxDecoration(
+            child: Text(paragraph, style: TextStyle(fontSize: 17),),
+          ),
+          SizedBox(height: 20),
+
           RoundBoxDecoration(
               child: Column(
             children: [
-              Text("Meaning: ",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: kTextColor,
-                  )),
+              // Text("Meaning: ",
+              //     style: TextStyle(
+              //       fontSize: 24,
+              //       fontWeight: FontWeight.bold,
+              //       color: kTextColor,
+              //     )),
               FutureBuilder<Translation>(
                 future: () async {
                   final translator = GoogleTranslator();
                   Future<Translation> meaning =
                       translator.translate(paragraph, from: 'en', to: 'vi');
+                  await uSleep(700);
                   return meaning;
                 }(),
                 builder: (context, snapshot) {
@@ -244,8 +261,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     );
                   }
                   if (snapshot.hasData) {
+                    uSleep(700);
                     return Html(data: snapshot.data.toString(), style: {
-                      "*": Style(fontSize: FontSize(20)),
+                      "*": Style(fontSize: FontSize(17)),
                     });
                   }
                   return Center(
@@ -255,7 +273,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                       return DecoratedBox(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Colors.black),
+                            color: kPrimaryColor),
                       );
                     },
                   ));
