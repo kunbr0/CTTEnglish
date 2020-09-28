@@ -69,22 +69,9 @@ class _WordMeaningViewState extends State<WordMeaningView> {
         stream: wordMeaningStream.stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            // return Center(
-            //     child: CircularProgressIndicator(
-            //   backgroundColor: kPrimaryColor,
-            // ));
             return Center(
-              child: SpinKitThreeBounce(
-                size: 15.0,
-                itemBuilder: (BuildContext context, int index) {
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: kPrimaryColor),
-                  );
-                },
-              )
-            );
+                child:
+                    CircularProgressIndicator(backgroundColor: kPrimaryColor));
           }
           return SingleChildScrollView(
             child: Column(
@@ -112,11 +99,19 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                               Row(
                                 children: [
                                   SizedBox(width: 5),
-                                  Icon(Icons.star),
-                                  Text("English: ",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 18)),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.arrow_right),
+                                        Text("English: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 18)),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                               Html(data: elm.enMeaning, style: {
@@ -133,11 +128,19 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                               Row(
                                 children: [
                                   SizedBox(width: 5),
-                                  Icon(Icons.star),
-                                  Text("Vietnamese: ",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 18)),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.arrow_right),
+                                        Text("Vietnamese: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 18)),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                               Padding(
