@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+//import 'dart:html';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:cttenglish/models/Translator.dart';
 import 'package:cttenglish/services/remove_special_charater.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +44,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
-  void getNewspaper() async {
+  Future getNewspaper() async {
     setState(() {
       this.isLoading = true;
     });
@@ -73,6 +76,44 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
   }
 
+  loadData() async {
+    ReceivePort receivePort = ReceivePort();
+    await Isolate.spawn(dataLoader, receivePort.sendPort);
+
+    // The 'echo' isolate sends its SendPort as the first message
+    SendPort sendPort = await receivePort.first;
+
+    List msg = await sendReceive(
+        sendPort, "https://jsonplaceholder.typicode.com/posts");
+
+    //debugPrint(msg[0].toString());
+  }
+
+// The entry point for the isolate
+  static dataLoader(SendPort sendPort) async {
+    // Open the ReceivePort for incoming messages.
+    ReceivePort port = ReceivePort();
+
+    // Notify any other isolates what port this isolate listens to.
+    sendPort.send(port.sendPort);
+
+    await for (var msg in port) {
+      String data = msg[0];
+      SendPort replyTo = msg[1];
+
+      String dataURL = data;
+      http.Response response = await http.get(dataURL);
+      // Lots of JSON to parse
+      replyTo.send(json.decode(response.body));
+    }
+  }
+
+  Future sendReceive(SendPort port, msg) {
+    ReceivePort response = ReceivePort();
+    port.send([msg, response.sendPort]);
+    return response.first;
+  }
+
   void _changeFontSize(double newFontSize) {
     this.kSentences.onChangeFontSize(newFontSize);
     setState(() {
@@ -94,7 +135,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
     _ReaderScreenState.backgroundColor =
         _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
 
-    getNewspaper();
+    //getNewspaper();
+    loadData();
   }
 
   @override
@@ -140,38 +182,62 @@ class _ReaderScreenState extends State<ReaderScreen> {
     void _showWordMeaning(String data, BuildContext screenContext) async {
       bool check = false;
       cShowModalBottomSheet(
-        StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Wrap(children: [
-              Column(
+        Wrap(children: [
+          Center(
+              child: Text(
+                  removeSpecialCharater(
+                          data, _ReaderScreenState.redundantString, "")
+                      .toLowerCase(),
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: kTextColor))),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 12),
+              RoundBoxDecoration(
+                  child: Row(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(width: 10),
-                      Text(
-                          removeSpecialCharater(
-                                  data, _ReaderScreenState.redundantString, "")
-                              .toLowerCase(),
-                          style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              color: kTextColor)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: IconButton(
-                          icon: check == true
-                              ? Icon(Icons.star, size: 30)
-                              : Icon(Icons.star_border, size: 30),
-                          onPressed: () {
-                            setModalState(() {
-                              check = !check;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  Text("Meaning: ",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: kTextColor,
+                      )),
+                  FutureBuilder<Translation>(
+                    future: () async {
+                      final translator = GoogleTranslator();
+                      Future<Translation> meaning =
+                          translator.translate(data, from: 'en', to: 'vi');
+                      await uSleep(700);
+                      return meaning;
+                    }(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text("No internet connection!"),
+                        );
+                      }
+                      if (snapshot.hasData) {
+                        return Text(
+                          snapshot.data.toString(),
+                          style: TextStyle(fontSize: 20),
+                        );
+                      }
+                      return Center(
+                          child: SpinKitThreeBounce(
+                        size: 15.0,
+                        itemBuilder: (BuildContext context, int index) {
+                          return DecoratedBox(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: kPrimaryColor),
+                          );
+                        },
+                      ));
+                    },
+                  )
                 ],
               ),
               Column(
@@ -268,25 +334,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
               )),
           SizedBox(height: 20),
           RoundBoxDecoration(
-            child: Column(
-              children: [
-                Text("English: ",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: kTextColor,
-                    )),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    paragraph,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ],
+            child: Text(
+              paragraph,
+              style: TextStyle(fontSize: 17),
             ),
           ),
           SizedBox(height: 20),
