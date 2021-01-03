@@ -3,10 +3,14 @@ import 'package:cttenglish/screens/home/Screens/home/home_screen.dart';
 import 'package:cttenglish/screens/home/Screens/profile/profile_screen.dart';
 import 'package:cttenglish/screens/home/Screens/dictionary/dictionary_screen.dart';
 import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
+import 'package:cttenglish/screens/home/Screens/speaking/speaking.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 
 class NavItem {
   final int id;
-  final String icon;
+  final IconData icon;
   final Widget destination;
 
   NavItem({this.id, this.icon, this.destination});
@@ -34,27 +38,27 @@ class NavItems extends ChangeNotifier {
   List<NavItem> items = [
     NavItem(
       id: 1,
-      icon: "assets/icons/home.svg",
+      icon: MdiIcons.home,
       destination: HomeScreen(),
     ),
     NavItem(
       id: 2,
-      icon: "assets/icons/list.svg",
+      icon: MdiIcons.googleTranslate,
       destination: DictionaryScreen(),
     ),
     NavItem(
       id: 3,
-      icon: "assets/icons/language.svg",
+      icon: MdiIcons.bookOpenPageVariant,
       destination: QuizHomePage(),
     ),
     NavItem(
       id: 4,
-      icon: "assets/icons/chef_nav.svg",
-      destination: Scaffold(),
+      icon: FontAwesomeIcons.comments,
+      destination: SpeechScreen(),
     ),
     NavItem(
       id: 5,
-      icon: "assets/icons/user.svg",
+      icon: MdiIcons.faceProfile,
       destination: ProfileScreen(),
     ),
   ];

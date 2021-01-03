@@ -44,7 +44,11 @@ dependencies:
   timeago: ^2.0.27
   flutter_custom_clippers: ^1.1.2
   font_awesome_flutter: ^8.8.1
+  material_design_icons_flutter: ^4.0.5755
   flutter_material_color_picker: ^1.0.5
+  avatar_glow: ^1.2.0
+  highlight_text: ^0.7.2
+  speech_to_text: ^3.1.0
 
 
 dev_dependencies:

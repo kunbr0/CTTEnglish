@@ -16,8 +16,7 @@ class MyBottomNavBar extends StatelessWidget {
     return Consumer<NavItems>(
       builder: (context, navItems, child) => Container(
         padding: EdgeInsets.symmetric(horizontal: defaultSize * 3), //30
-        // just for demo
-        // height: 80,
+        
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -38,19 +37,12 @@ class MyBottomNavBar extends StatelessWidget {
                 icon: navItems.items[index].icon,
                 press: () {
                   navItems.chnageNavIndex(index: index);
-                  // maybe destinationChacker is not needed in future because then all of our nav items have destination
-                  // But Now if we click those which dont have destination then it shows error
-                  // And this fix this problem
+                  
                   if (navItems.items[index].destinationChecker()) {
                     onTap(index);
                     
                   }
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => navItems.items[index].destination,
-                  //   ),
-                  // );
+                 
                 },
               ),
             ),
@@ -61,13 +53,9 @@ class MyBottomNavBar extends StatelessWidget {
   }
 
   IconButton buildIconNavBarItem(
-      {String icon, Function press, bool isActive = false}) {
+      {IconData icon, Function press, bool isActive = false}) {
     return IconButton(
-      icon: SvgPicture.asset(
-        icon,
-        color: isActive ? kPrimaryColor : Color(0xFFD1D4D4),
-        height: 22,
-      ),
+      icon: Icon(icon, color: isActive ? kPrimaryColor : Color(0xFFD1D4D4), size: 22,),
       onPressed: press,
     );
   }
