@@ -180,6 +180,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
 
     void _showWordMeaning(String data, BuildContext screenContext) async {
+      bool check = false;
       cShowModalBottomSheet(
         Wrap(children: [
           Center(
@@ -238,28 +239,85 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     },
                   )
                 ],
-              )),
-              SizedBox(height: 20),
-              RoundBoxDecoration(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Example: ",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: kTextColor)),
-                    SizedBox(height: 10),
-                    WordMeaningView(
-                      word: data,
-                    ),
-                  ],
-                ),
               ),
-              SizedBox(height: 10),
-            ],
-          )
-        ]),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 12),
+                  RoundBoxDecoration(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Text("Meaning: ",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: kTextColor,
+                            )),
+                        FutureBuilder<Translation>(
+                          future: () async {
+                            final translator = GoogleTranslator();
+                            Future<Translation> meaning = translator
+                                .translate(data, from: 'en', to: 'vi');
+                            await uSleep(700);
+                            return meaning;
+                          }(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text("No internet connection!"),
+                              );
+                            }
+                            if (snapshot.hasData) {
+                              return Text(
+                                removeSpecialCharater(snapshot.data.toString(),
+                                    redundantString, ""),
+                                style: TextStyle(fontSize: 20),
+                              );
+                            }
+                            return Center(
+                                child: SpinKitThreeBounce(
+                              size: 15.0,
+                              itemBuilder: (BuildContext context, int index) {
+                                return DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: kPrimaryColor),
+                                );
+                              },
+                            ));
+                          },
+                        )
+                      ],
+                    ),
+                  )),
+                  SizedBox(height: 20),
+                  RoundBoxDecoration(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Example: ",
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: kTextColor)),
+                          SizedBox(height: 10),
+                          WordMeaningView(
+                            word: data,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                ],
+              )
+            ]);
+          },
+        ),
       );
     }
 
@@ -267,6 +325,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
         String paragraph, BuildContext screenContext) async {
       cShowModalBottomSheet(
         Column(children: [
+          SizedBox(height: 10),
+          Text("Translate sentences",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: kTextColor,
+              )),
           SizedBox(height: 20),
           RoundBoxDecoration(
             child: Text(
@@ -278,12 +343,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
           RoundBoxDecoration(
               child: Column(
             children: [
-              // Text("Meaning: ",
-              //     style: TextStyle(
-              //       fontSize: 24,
-              //       fontWeight: FontWeight.bold,
-              //       color: kTextColor,
-              //     )),
+              Text("Vietnamese: ",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: kTextColor,
+                  )),
+              SizedBox(height: 10),
               FutureBuilder<Translation>(
                 future: () async {
                   final translator = GoogleTranslator();
@@ -301,25 +367,15 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   if (snapshot.hasData) {
                     uSleep(700);
                     return Html(data: snapshot.data.toString(), style: {
-                      "*": Style(fontSize: FontSize(17)),
+                      "*": Style(fontSize: FontSize(20)),
                     });
                   }
-                  return Center(
-                      child: SpinKitThreeBounce(
-                    size: 15.0,
-                    itemBuilder: (BuildContext context, int index) {
-                      return DecoratedBox(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: kPrimaryColor),
-                      );
-                    },
-                  ));
+                  return Center(child: CircularProgressIndicator());
                 },
               )
             ],
           )),
-          SizedBox(height: 20)
+          SizedBox(height: 10)
         ]),
       );
     }
