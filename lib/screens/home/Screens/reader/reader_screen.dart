@@ -182,19 +182,18 @@ class _ReaderScreenState extends State<ReaderScreen> {
     void _showWordMeaning(String data, BuildContext screenContext) async {
       bool check = false;
       cShowModalBottomSheet(
-        Wrap(children: [
-          Center(
-              child: Text(
-                  removeSpecialCharater(
-                          data, _ReaderScreenState.redundantString, "")
-                      .toLowerCase(),
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: kTextColor))),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        Wrap(
+          children: [
+            Center(
+                child: Text(
+                    removeSpecialCharater(
+                            data, _ReaderScreenState.redundantString, "")
+                        .toLowerCase(),
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: kTextColor))),
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               SizedBox(height: 12),
               RoundBoxDecoration(
                   child: Row(
@@ -239,7 +238,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     },
                   )
                 ],
-              ),
+              )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -314,9 +313,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   ),
                   SizedBox(height: 10),
                 ],
-              )
-            ]);
-          },
+              ),
+            ])
+          ],
         ),
       );
     }
