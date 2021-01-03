@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cttenglish/models/NavItem.dart';
 import 'package:cttenglish/components/my_bottom_nav_bar.dart';
-
 import 'package:cttenglish/screens/home/Screens/routes_push.dart';
-
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
- 
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
@@ -19,9 +16,6 @@ class _HomeState extends State<Home> {
     return e.destination;
   }).toList();
 
-  
-  
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -29,11 +23,8 @@ class _HomeState extends State<Home> {
       create: (context) => NavItems(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-
         initialRoute: '/',
         onGenerateRoute: RoutesGenerator.generateRoute,
-        
-
         title: 'Recipe App',
         theme: ThemeData(
           // backgroundColor: Colors.white,
@@ -53,8 +44,7 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.only(bottom: 0.0),
                   child: MyBottomNavBar(
                     onTap: (index) => setState(() => _selectedIndex = index),
-                  ))  
-            ),
+                  ))),
         ),
       ),
     );

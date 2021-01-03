@@ -69,22 +69,9 @@ class _WordMeaningViewState extends State<WordMeaningView> {
         stream: wordMeaningStream.stream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            // return Center(
-            //     child: CircularProgressIndicator(
-            //   backgroundColor: kPrimaryColor,
-            // ));
             return Center(
-              child: SpinKitThreeBounce(
-                size: 15.0,
-                itemBuilder: (BuildContext context, int index) {
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: kPrimaryColor),
-                  );
-                },
-              )
-            );
+                child:
+                    CircularProgressIndicator(backgroundColor: kPrimaryColor));
           }
           return SingleChildScrollView(
             child: Column(
@@ -103,53 +90,24 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                         ),
                         color: Colors.white,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 5),
-                                  Icon(Icons.star),
-                                  Text("English: ",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 18)),
-                                ],
-                              ),
-                              Html(data: elm.enMeaning, style: {
-                                "*": Style(fontSize: FontSize(18)),
-                                "em": Style(
-                                    fontStyle: FontStyle.italic,
-                                    color: kPrimaryColor),
-                              }),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 5),
-                                  Icon(Icons.star),
-                                  Text("Vietnamese: ",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 18)),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(elm.viMeaning,
-                                    style: TextStyle(fontSize: 18)),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                        ],
-                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Html(data: elm.enMeaning, style: {
+                              "*": Style(fontSize: FontSize(16)),
+                              "em": Style(
+                                  fontStyle: FontStyle.italic,
+                                  color: kPrimaryColor)
+                            }),
+                            Html(data: elm.viMeaning, style: {
+                              "*": Style(fontSize: FontSize(16)),
+                              "em": Style(
+                                  fontStyle: FontStyle.italic,
+                                  color: kPrimaryColor)
+                            }),
+                            SizedBox(height: 10),
+                          ],
+                        ),
                     ));
               }).toList(),
             ),

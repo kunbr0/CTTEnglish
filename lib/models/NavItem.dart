@@ -44,7 +44,7 @@ class NavItems extends ChangeNotifier {
     ),
     NavItem(
       id: 3,
-      icon: "assets/icons/camera.svg",
+      icon: "assets/icons/language.svg",
       destination: QuizHomePage(),
     ),
     NavItem(
