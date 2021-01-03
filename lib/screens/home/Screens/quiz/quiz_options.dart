@@ -61,49 +61,16 @@ class _QuizOptionsDialogState extends State<QuizOptionsDialog> {
               runAlignment: WrapAlignment.center,
               runSpacing: 16.0,
               spacing: 16.0,
-              children: <Widget>[
-                SizedBox(width: 0.0),
-                ActionChip(
-                  label: Text("10"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _noOfQuestions == 10
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectNumberOfQuestions(10),
-                ),
-                ActionChip(
-                  label: Text("20"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _noOfQuestions == 20
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectNumberOfQuestions(20),
-                ),
-                ActionChip(
-                  label: Text("30"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _noOfQuestions == 30
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectNumberOfQuestions(30),
-                ),
-                ActionChip(
-                  label: Text("40"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _noOfQuestions == 40
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectNumberOfQuestions(40),
-                ),
-                ActionChip(
-                  label: Text("50"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _noOfQuestions == 50
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectNumberOfQuestions(50),
-                ),
-              ],
+              children: difficulties
+                  .map((diff) => (ActionChip(
+                        label: Text(diff.toString()),
+                        labelStyle: TextStyle(color: Colors.white),
+                        backgroundColor: _noOfQuestions == diff.toInt()
+                            ? Colors.indigo
+                            : Colors.grey.shade600,
+                        onPressed: () => _selectNumberOfQuestions(diff.toInt()),
+                      )))
+                  .toList(),
             ),
           ),
           SizedBox(height: 20.0),
@@ -117,14 +84,6 @@ class _QuizOptionsDialogState extends State<QuizOptionsDialog> {
               spacing: 16.0,
               children: <Widget>[
                 SizedBox(width: 0.0),
-                ActionChip(
-                  label: Text("Any"),
-                  labelStyle: TextStyle(color: Colors.white),
-                  backgroundColor: _difficulty == null
-                      ? Colors.indigo
-                      : Colors.grey.shade600,
-                  onPressed: () => _selectDifficulty(null),
-                ),
                 ActionChip(
                   label: Text("Easy"),
                   labelStyle: TextStyle(color: Colors.white),
@@ -196,8 +155,12 @@ class _QuizOptionsDialogState extends State<QuizOptionsDialog> {
   List<Question> randomQuestions(List<Question> questions) {
     List<Question> selectedQuestions = [];
     Random random = new Random();
+    print(questionStructure[_difficulty]["hard"] * _noOfQuestions);
+    print(questionStructure[_difficulty]["medium"] * _noOfQuestions);
+    print(questionStructure[_difficulty]["easy"] * _noOfQuestions);
 
-    int requiredLength = questionStructure[_difficulty]["hard"];
+    int requiredLength =
+        (questionStructure[_difficulty]["hard"] * _noOfQuestions).ceil();
     while (selectedQuestions.length != requiredLength) {
       int random_index = random.nextInt(hardQuestions.length);
       Question randomQuestion = hardQuestions[random_index];
@@ -206,7 +169,8 @@ class _QuizOptionsDialogState extends State<QuizOptionsDialog> {
       }
     }
 
-    requiredLength += questionStructure[_difficulty]["medium"];
+    requiredLength +=
+        (questionStructure[_difficulty]["medium"] * _noOfQuestions).toInt();
     while (selectedQuestions.length != requiredLength) {
       int random_index = random.nextInt(mediumQuestions.length);
       Question randomQuestion = mediumQuestions[random_index];
@@ -215,7 +179,8 @@ class _QuizOptionsDialogState extends State<QuizOptionsDialog> {
       }
     }
 
-    requiredLength += questionStructure[_difficulty]["easy"];
+    requiredLength +=
+        (questionStructure[_difficulty]["easy"] * _noOfQuestions).toInt();
     while (selectedQuestions.length != requiredLength) {
       int random_index = random.nextInt(easyQuestions.length);
       Question randomQuestion = easyQuestions[random_index];

@@ -47,13 +47,65 @@ class QuizHomePage extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
+                        horizontal: 16.0, vertical: 4.0),
                     child: Text(
-                      "Select a test",
+                      "TOEIC",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16.0),
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(16.0),
+                  sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0),
+                      delegate: SliverChildBuilderDelegate(
+                        _buildCategoryItem,
+                        childCount: categories.length,
+                      )),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 4.0),
+                    child: Text(
+                      "IELTS",
+                      style: TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(16.0),
+                  sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0),
+                      delegate: SliverChildBuilderDelegate(
+                        _buildCategoryItem,
+                        childCount: categories.length,
+                      )),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 4.0),
+                    child: Text(
+                      "BY TOPICS",
+                      style: TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0),
                     ),
                   ),
                 ),
@@ -78,7 +130,6 @@ class QuizHomePage extends StatelessWidget {
 
   Widget _buildCategoryItem(BuildContext context, int index) {
     Category category = categories[index];
-    print(categories[index]);
     return MaterialButton(
       elevation: 1.0,
       highlightElevation: 1.0,
@@ -107,9 +158,7 @@ class QuizHomePage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (sheetContext) => BottomSheet(
-        builder: (_) => QuizOptionsDialog(
-          category: category,
-        ),
+        builder: (_) => QuizOptionsDialog(category: category),
         onClosing: () {},
       ),
     );

@@ -17,18 +17,22 @@ const Map<int, dynamic> demoAnswers = {
 };
 
 final questionStructure = {
-  "easy": {"easy": 7, "medium": 2, "hard": 1},
-  "medium": {"easy": 5, "medium": 3, "hard": 2},
-  "hard": {"easy": 3, "medium": 4, "hard": 3},
+  "easy": {"easy": 0.7, "medium": 0.2, "hard": 0.1},
+  "medium": {"easy": 0.5, "medium": 0.3, "hard": 0.2},
+  "hard": {"easy": 0.3, "medium": 0.4, "hard": 0.3},
 };
+
+final List<String> topicList = ["TOEIC", "IELTS", "BY TOPICS"];
+
+final List<int> difficulties = [10, 15, 20, 25];
 
 final List<Category> categories = [
   Category(9, "Test 1", icon: FontAwesomeIcons.bookOpen),
-  Category(10, "Test 2", icon: FontAwesomeIcons.bookOpen),
-  Category(11, "Test 3", icon: FontAwesomeIcons.bookOpen),
-  Category(11, "Test 4", icon: FontAwesomeIcons.bookOpen),
-  Category(11, "Test 5", icon: FontAwesomeIcons.bookOpen),
-  Category(11, "Test 6", icon: FontAwesomeIcons.bookOpen)
+  Category(10, "Test 2", icon: FontAwesomeIcons.addressBook),
+  Category(11, "Test 3", icon: FontAwesomeIcons.android),
+  Category(11, "Test 4", icon: FontAwesomeIcons.certificate),
+  Category(11, "Test 5", icon: FontAwesomeIcons.photoVideo),
+  Category(11, "Test 6", icon: FontAwesomeIcons.adobe)
 ];
 
 final List<Question> demoQuestions = Question.fromData(
