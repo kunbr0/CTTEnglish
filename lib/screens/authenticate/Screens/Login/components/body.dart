@@ -9,13 +9,14 @@ import 'package:cttenglish/services/auth.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../../constants.dart';
+
 class Body extends StatefulWidget {
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
-  
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String error = '';
@@ -25,12 +26,31 @@ class _BodyState extends State<Body> {
   String email = '';
   String password = '';
 
+  Function GetPressAction() {
+    if (loading) {
+      return () {};
+    } else {
+      return () async {
+        setState(() => loading = true);
+        dynamic result =
+            await _auth.signInWithEmailAndPassword(email, password);
+        if (result == null) {
+          setState(() {
+            loading = false;
+            error = 'Could not sign in with those credentials';
+          });
+        }
+      };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Background(
-      child: SingleChildScrollView(
-        child: Column(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -40,7 +60,7 @@ class _BodyState extends State<Body> {
             SizedBox(height: size.height * 0.03),
             SvgPicture.asset(
               "assets/icons/login.svg",
-              height: size.height * 0.35,
+              height: size.height * 0.25,
             ),
             SizedBox(height: size.height * 0.03),
             RoundedInputField(
@@ -48,25 +68,21 @@ class _BodyState extends State<Body> {
               onChanged: (value) {
                 setState(() => email = value);
               },
+              disabled: loading,
             ),
             RoundedPasswordField(
               onChanged: (value) {
                 setState(() => password = value);
               },
+              disabled: loading,
             ),
             RoundedButton(
-                text: "LOGIN",
-                press: () async {
-                  setState(() => loading = true);
-                  dynamic result =
-                      await _auth.signInWithEmailAndPassword(email, password);
-                  if (result == null) {
-                    setState(() {
-                      loading = false;
-                      error = 'Could not sign in with those credentials';
-                    });
-                  }
-                }),
+              text: loading ? "Loading..." : "Login",
+              press: GetPressAction(),
+              color: loading ? kDisabledColor : kPrimaryColor,
+            ),
+            
+
             SizedBox(height: size.height * 0.03),
             AlreadyHaveAnAccountCheck(
               press: () {
