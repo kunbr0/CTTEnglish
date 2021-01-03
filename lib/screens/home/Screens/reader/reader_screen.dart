@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-//import 'dart:html';
 import 'dart:io';
-import 'dart:isolate';
 import 'package:cttenglish/models/Translator.dart';
 import 'package:cttenglish/services/remove_special_charater.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +41,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   _ReaderScreenState({Key key, @required this.articleUrl});
 
-  Future getNewspaper() async {
+  void getNewspaper() async {
     setState(() {
       this.isLoading = true;
     });
@@ -76,44 +73,6 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
   }
 
-  loadData() async {
-    ReceivePort receivePort = ReceivePort();
-    await Isolate.spawn(dataLoader, receivePort.sendPort);
-
-    // The 'echo' isolate sends its SendPort as the first message
-    SendPort sendPort = await receivePort.first;
-
-    List msg = await sendReceive(
-        sendPort, "https://jsonplaceholder.typicode.com/posts");
-
-    //debugPrint(msg[0].toString());
-  }
-
-// The entry point for the isolate
-  static dataLoader(SendPort sendPort) async {
-    // Open the ReceivePort for incoming messages.
-    ReceivePort port = ReceivePort();
-
-    // Notify any other isolates what port this isolate listens to.
-    sendPort.send(port.sendPort);
-
-    await for (var msg in port) {
-      String data = msg[0];
-      SendPort replyTo = msg[1];
-
-      String dataURL = data;
-      http.Response response = await http.get(dataURL);
-      // Lots of JSON to parse
-      replyTo.send(json.decode(response.body));
-    }
-  }
-
-  Future sendReceive(SendPort port, msg) {
-    ReceivePort response = ReceivePort();
-    port.send([msg, response.sendPort]);
-    return response.first;
-  }
-
   void _changeFontSize(double newFontSize) {
     this.kSentences.onChangeFontSize(newFontSize);
     setState(() {
@@ -135,8 +94,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     _ReaderScreenState.backgroundColor =
         _ReaderScreenState.backgroundColor ?? Color.fromRGBO(38, 38, 38, 0.4);
 
-    //getNewspaper();
-    loadData();
+    getNewspaper();
   }
 
   @override
@@ -172,15 +130,18 @@ class _ReaderScreenState extends State<ReaderScreen> {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
               height: MediaQuery.of(context).size.height * 0.7,
               child: SizedBox.expand(
-                  child: SingleChildScrollView(
-                child: kChild,
-              )),
+                child: SingleChildScrollView(
+                  child: kChild,
+                )
+              
+              ),
             );
           });
     }
 
     void _showWordMeaning(String data, BuildContext screenContext) async {
       cShowModalBottomSheet(
+        
         Wrap(children: [
           Center(
               child: Text(
@@ -198,12 +159,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
               RoundBoxDecoration(
                   child: Row(
                 children: [
-                  Text("Meaning: ",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: kTextColor,
-                      )),
+                  Text(
+                    "Meaning: ",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kTextColor,
+                    )
+                  ),
                   FutureBuilder<Translation>(
                     future: () async {
                       final translator = GoogleTranslator();
@@ -263,18 +226,17 @@ class _ReaderScreenState extends State<ReaderScreen> {
       );
     }
 
+
     void _showParagraphMeaning(
         String paragraph, BuildContext screenContext) async {
       cShowModalBottomSheet(
         Column(children: [
           SizedBox(height: 20),
           RoundBoxDecoration(
-            child: Text(
-              paragraph,
-              style: TextStyle(fontSize: 17),
-            ),
+            child: Text(paragraph, style: TextStyle(fontSize: 17),),
           ),
           SizedBox(height: 20),
+
           RoundBoxDecoration(
               child: Column(
             children: [
@@ -334,13 +296,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
     }
 
     this.kSentences.onCallback(onTapWord, onTranslateButtonPressed);
-    // KSentence sentence = new KSentence(
-    //     data: data,
-    //     sentence: data
-    //         .split(" ")
-    //         .map((word) =>
-    //             KWord(word, fontSize: fontSize, onTap: onTapWord).word)
-    //         .toList());
+
+
     AppBar appBar = AppBar(
       title: Center(
           child: Text(

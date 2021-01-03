@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cttenglish/screens/home/Screens/reader/reader_screen.dart';
 import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
-import 'package:cttenglish/screens/home/Screens/reader/Test/reader.dart';
+//import 'package:cttenglish/screens/home/Screens/reader/Test/reader.dart';
 
 class RoutesGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -14,9 +14,9 @@ class RoutesGenerator {
         if (args is String) {
           debugPrint(args);
           return CupertinoPageRoute(
-              //builder: (_) => ReaderScreen(data: args ?? ''));
-              builder: (_) => KReader(
-                  url: "https://jsonplaceholder.typicode.com/posts" ?? ''));
+              builder: (_) => ReaderScreen(data: args ?? ''));
+              // builder: (_) => KReader(
+              //     url: args ?? ''));
         } else {
           return _errorRoute();
         }
