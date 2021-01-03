@@ -12,9 +12,11 @@ class RoutesGenerator {
       // Reader
       case '/reader':
         if (args is String) {
+          debugPrint(args);
           return CupertinoPageRoute(
               //builder: (_) => ReaderScreen(data: args ?? ''));
-              builder: (_) => KReader(url: "https://jsonplaceholder.typicode.com/posts" ?? ''));
+              builder: (_) => KReader(
+                  url: "https://jsonplaceholder.typicode.com/posts" ?? ''));
         } else {
           return _errorRoute();
         }
