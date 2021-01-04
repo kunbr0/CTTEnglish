@@ -36,6 +36,7 @@ class _HomeState extends State<Home> {
         home: DefaultTabController(
           length: 5,
           child: Scaffold(
+              resizeToAvoidBottomInset: false,
               body: IndexedStack(
                 index: _selectedIndex,
                 children: _screens,

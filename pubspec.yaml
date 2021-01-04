@@ -45,7 +45,7 @@ dependencies:
   flutter_custom_clippers: ^1.1.2
   font_awesome_flutter: ^8.8.1
   flutter_material_color_picker: ^1.0.5
-
+  modal_progress_hud: ^0.1.3
 
 dev_dependencies:
   flutter_test:
