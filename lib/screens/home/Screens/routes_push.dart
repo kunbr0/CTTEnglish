@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cttenglish/screens/home/Screens/reader/reader_screen.dart';
 import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
-//import 'package:cttenglish/screens/home/Screens/reader/Test/reader.dart';
+import 'package:cttenglish/screens/home/Screens/youtube/test2.dart';
 
 class RoutesGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -25,6 +25,8 @@ class RoutesGenerator {
       case '/quiz_app':
         return CupertinoPageRoute(builder: (_) => QuizHomePage());
 
+      case '/video_player':
+        return CupertinoPageRoute(builder: (_) => YoutubeApp());
       // Default
       default:
         return _errorRoute();

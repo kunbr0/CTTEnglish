@@ -6,8 +6,8 @@ import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
 import 'package:cttenglish/screens/home/Screens/speaking/speaking.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:cttenglish/screens/home/Screens/youtube/main.dart';
-import 'package:cttenglish/screens/home/Screens/youtube/test.dart';
+//import 'package:cttenglish/screens/home/Screens/youtube/main.dart';
+import 'package:cttenglish/screens/home/Screens/youtube/test1.dart';
 
 class NavItem {
   final int id;
@@ -60,7 +60,7 @@ class NavItems extends ChangeNotifier {
     NavItem(
       id: 5,
       icon: FontAwesomeIcons.youtube,
-      destination: YoutubePlayerDemoApp(),
+      destination: VideoPlayerScreen(),
     ),
     NavItem(
       id: 6,
