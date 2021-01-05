@@ -1,13 +1,13 @@
 import 'dart:ui';
-
-import 'package:cttenglish/constants.dart';
-
-import '../constant.dart';
 import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 import '../services/NetworkHelper.dart';
 import '../screens/word_page.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import '../constant.dart';
 import '../widgets/not_found.dart';
+import 'package:cttenglish/constants.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -17,6 +17,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   bool loading = false;
   bool noData = false;
+  List<String> suggestionList = [];
   TextEditingController txt = TextEditingController();
 
   void searchWord(String word) async {
@@ -40,6 +41,48 @@ class _SearchPageState extends State<SearchPage> {
                 WordPage(wordDetails: wordDetails, word: word),
           ));
     }
+  }
+
+  void generateSuggestion(String word) async {
+    suggestionList.clear();
+    int suggestionListLength = 5;
+
+    if (word != "" && word != null) {
+      for (int i = 0; i < all.length; i++) {
+        String suggestion = all[i];
+
+        if (suggestionListLength >= 0 && suggestion.startsWith(word)) {
+          if (!suggestionList.contains(suggestion)) {
+            suggestionList.add(suggestion);
+            suggestionListLength--;
+          }
+        }
+      }
+    }
+
+    setState(() {});
+  }
+
+  Widget buildSuggestions() {
+    return ListView.builder(
+        itemCount: suggestionList.length,
+        itemBuilder: (BuildContext context, int i) {
+          final String suggestion = suggestionList[i];
+          return ListTile(
+            leading: const Icon(Icons.history),
+            title: RichText(
+              text: TextSpan(
+                text: suggestion,
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            onTap: () {
+              txt.text = suggestion;
+              suggestionList.clear();
+              setState(() {});
+            },
+          );
+        });
   }
 
   @override
@@ -86,6 +129,7 @@ class _SearchPageState extends State<SearchPage> {
                     noData = false;
                   });
                 },
+                onChanged: generateSuggestion,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 17.0,
@@ -102,6 +146,7 @@ class _SearchPageState extends State<SearchPage> {
                 },
                 decoration: cSearchBoxDecoration,
               ),
+              Flexible(child: buildSuggestions()),
               NotFoundWidget(noData: noData),
             ],
           ),

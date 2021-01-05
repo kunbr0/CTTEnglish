@@ -16,7 +16,6 @@ class WordPage extends StatelessWidget {
   WordPage({this.wordDetails, this.word});
 
   Future _speak() async {
-    // await tts.setVolume(volume);
     await tts.setSpeechRate(.8);
     await tts.setPitch(1);
     await tts.setLanguage("en-US");
