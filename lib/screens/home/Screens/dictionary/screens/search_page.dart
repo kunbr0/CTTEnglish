@@ -68,19 +68,21 @@ class _SearchPageState extends State<SearchPage> {
         itemCount: suggestionList.length,
         itemBuilder: (BuildContext context, int i) {
           final String suggestion = suggestionList[i];
-          return ListTile(
-            leading: const Icon(Icons.history),
-            title: RichText(
-              text: TextSpan(
-                text: suggestion,
-                style: TextStyle(color: Colors.black),
+          return Card(
+            child: ListTile(
+              leading: const Icon(Icons.history),
+              title: RichText(
+                text: TextSpan(
+                  text: suggestion,
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
+              onTap: () {
+                txt.text = suggestion;
+                suggestionList.clear();
+                setState(() {});
+              },
             ),
-            onTap: () {
-              txt.text = suggestion;
-              suggestionList.clear();
-              setState(() {});
-            },
           );
         });
   }
