@@ -30,6 +30,7 @@ class _SearchPageState extends State<SearchPage> {
 
     if (wordDetails == null) {
       setState(() {
+        suggestionList.clear();
         noData = true;
       });
     } else {
@@ -68,14 +69,25 @@ class _SearchPageState extends State<SearchPage> {
         itemCount: suggestionList.length,
         itemBuilder: (BuildContext context, int i) {
           final String suggestion = suggestionList[i];
+          final tailPart = suggestion.split(txt.text)[1];
+
           return Card(
             child: ListTile(
               leading: const Icon(Icons.history),
               title: RichText(
                 text: TextSpan(
-                  text: suggestion,
-                  style: TextStyle(color: Colors.black),
-                ),
+                    text: txt.text,
+                    style: TextStyle(
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                    children: [
+                      TextSpan(
+                          text: tailPart,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal)),
+                    ]),
               ),
               onTap: () {
                 txt.text = suggestion;
@@ -134,7 +146,7 @@ class _SearchPageState extends State<SearchPage> {
                 onChanged: generateSuggestion,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
-                  fontSize: 17.0,
+                  fontSize: 18.0,
                   fontFamily: 'ContentFont',
                 ),
                 cursorColor: Colors.grey,

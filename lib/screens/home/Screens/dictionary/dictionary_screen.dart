@@ -8,7 +8,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'components/drop_down.dart';
 import 'package:cttenglish/constants.dart';
-import 'package:cttenglish/shared/beautiful_appbar.dart';
 import './screens/search_page.dart';
 
 class DictionaryScreen extends StatefulWidget {
