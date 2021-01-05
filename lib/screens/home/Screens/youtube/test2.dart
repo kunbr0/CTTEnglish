@@ -63,9 +63,9 @@ class _YoutubeAppDemoState extends State<YoutubeAppDemo> {
           '34_PXCzGw1M',
         ],
         startAt: const Duration(minutes: 1, seconds: 36),
-        showControls: true,
-        showFullscreenButton: true,
-        desktopMode: true,
+        showControls: false,
+        showFullscreenButton: false,
+        desktopMode: false,
         privacyEnhanced: true,
       ),
     );
