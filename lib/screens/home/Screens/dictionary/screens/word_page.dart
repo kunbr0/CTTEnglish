@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cttenglish/constants.dart';
+import 'package:translator/translator.dart';
 
 import '../constant.dart';
 import 'package:flutter/cupertino.dart';

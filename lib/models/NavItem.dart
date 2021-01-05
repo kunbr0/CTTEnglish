@@ -3,7 +3,6 @@ import 'package:cttenglish/screens/home/Screens/home/home_screen.dart';
 import 'package:cttenglish/screens/home/Screens/profile/profile_screen.dart';
 import 'package:cttenglish/screens/home/Screens/dictionary/dictionary_screen.dart';
 import 'package:cttenglish/screens/home/Screens/quiz/home.dart';
-import 'package:cttenglish/screens/home/Screens/video_player/video_players_screen.dart';
 
 class NavItem {
   final int id;
@@ -57,11 +56,6 @@ class NavItems extends ChangeNotifier {
       id: 5,
       icon: "assets/icons/user.svg",
       destination: ProfileScreen(),
-    ),
-    NavItem(
-      id: 5,
-      icon: "assets/icons/user.svg",
-      destination: VideoPlayerScreen(),
-    ),
+    )
   ];
 }
