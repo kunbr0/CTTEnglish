@@ -90,69 +90,24 @@ class _WordMeaningViewState extends State<WordMeaningView> {
                         ),
                         color: Colors.white,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 5),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.arrow_right),
-                                        Text("English: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Html(data: elm.enMeaning, style: {
-                                "*": Style(fontSize: FontSize(18)),
-                                "em": Style(
-                                    fontStyle: FontStyle.italic,
-                                    color: kPrimaryColor),
-                              }),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 5),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.arrow_right),
-                                        Text("Vietnamese: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(elm.viMeaning,
-                                    style: TextStyle(fontSize: 18)),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                        ],
-                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Html(data: elm.enMeaning, style: {
+                              "*": Style(fontSize: FontSize(16)),
+                              "em": Style(
+                                  fontStyle: FontStyle.italic,
+                                  color: kPrimaryColor)
+                            }),
+                            Html(data: elm.viMeaning, style: {
+                              "*": Style(fontSize: FontSize(16)),
+                              "em": Style(
+                                  fontStyle: FontStyle.italic,
+                                  color: kPrimaryColor)
+                            }),
+                            SizedBox(height: 10),
+                          ],
+                        ),
                     ));
               }).toList(),
             ),
