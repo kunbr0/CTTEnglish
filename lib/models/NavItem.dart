@@ -66,6 +66,6 @@ class NavItems extends ChangeNotifier {
       id: 6,
       icon: MdiIcons.faceProfile,
       destination: ProfileScreen(),
-    ),
+    )
   ];
 }

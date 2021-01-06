@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:cttenglish/screens/home/Screens/home/components/body.dart';
 import 'package:cttenglish/size_config.dart';
 import 'package:cttenglish/constants.dart';
-import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatelessWidget {
   @override
