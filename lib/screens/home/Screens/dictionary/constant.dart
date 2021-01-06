@@ -22,6 +22,21 @@ const cSearchBoxDecoration = InputDecoration(
   border: InputBorder.none,
 );
 
+const cParaphraseDecoration = InputDecoration(
+  filled: true,
+  fillColor: Color(0xFFEAEAEA),
+  hintText: 'Enter a phrase',
+  hintStyle: TextStyle(
+    color: Colors.black26,
+  ),
+  prefixIcon: Icon(
+    Icons.search,
+    size: 30.0,
+    color: Colors.black26,
+  ),
+  border: InputBorder.none,
+);
+
 const cCategoryTextStyle = TextStyle(
   fontWeight: FontWeight.w700,
   fontSize: 16.0,

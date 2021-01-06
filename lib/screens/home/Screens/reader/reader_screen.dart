@@ -8,13 +8,13 @@ import 'package:cttenglish/models/Translator.dart';
 import 'package:cttenglish/services/remove_special_charater.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'wordMeaning/wordMeaningPanel.dart';
 import 'settingsPanel/settingsPanel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_html/style.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 

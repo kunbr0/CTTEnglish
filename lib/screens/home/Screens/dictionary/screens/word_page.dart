@@ -1,33 +1,32 @@
 import 'dart:ui';
 
 import 'package:cttenglish/constants.dart';
-import 'package:translator/translator.dart';
 
 import '../constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/definition_list_view.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import '../services/SpeakerHelper.dart';
 
 class WordPage extends StatelessWidget {
   final wordDetails;
   final word;
-  FlutterTts tts = new FlutterTts();
+  // FlutterTts tts = new FlutterTts();
 
   WordPage({this.wordDetails, this.word});
 
-  Future _speak() async {
-    await tts.setSpeechRate(.8);
-    await tts.setPitch(1);
-    await tts.setLanguage("en-US");
+  // Future _speak() async {
+  //   await tts.setSpeechRate(.8);
+  //   await tts.setPitch(1);
+  //   await tts.setLanguage("en-US");
 
-    if ("_newVoiceText" != null) {
-      if ("_newVoiceText".isNotEmpty) {
-        await tts.awaitSpeakCompletion(true);
-        await tts.speak(word);
-      }
-    }
-  }
+  //   if ("_newVoiceText" != null) {
+  //     if ("_newVoiceText".isNotEmpty) {
+  //       await tts.awaitSpeakCompletion(true);
+  //       await tts.speak(word);
+  //     }
+  //   }
+  // }
 
   List<Column> definitions() {
     List<Column> definitions = [];
@@ -92,7 +91,7 @@ class WordPage extends StatelessWidget {
                       icon: Icon(Icons.mic),
                       iconSize: 35,
                       onPressed: () async {
-                        await _speak();
+                        await SpeakerHelper.speak(this.word);
                       },
                     )
                   ],

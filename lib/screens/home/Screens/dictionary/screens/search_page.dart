@@ -10,10 +10,11 @@ import '../services/NetworkHelper.dart';
 import '../screens/word_page.dart';
 import '../constant.dart';
 import '../widgets/not_found.dart';
-import 'package:cttenglish/constants.dart';
 import './../../../../../models/Service.dart';
+import '../screens/paraphrase_example.dart';
+import 'package:cttenglish/constants.dart';
 
-enum DictionaryCategories { EnEn, EnVi, TranslateParagraph }
+enum DictionaryCategories { EnEn, EnVi, TranslateParagraph, EnglishParaphrase }
 
 class SearchPage extends StatefulWidget {
   @override
@@ -43,6 +44,9 @@ class _SearchPageState extends State<SearchPage> {
       case DictionaryCategories.TranslateParagraph:
         result = "Translate Paragraph";
         break;
+      case DictionaryCategories.EnglishParaphrase:
+        result = "English Paraphrase";
+        break;
       default:
         break;
     }
@@ -69,6 +73,32 @@ class _SearchPageState extends State<SearchPage> {
         "emoji": null
       });
     });
+  }
+
+  void searchParaphrase(String phrase) async {
+    var res =
+        await http.get('https://api.kunbr0.com/en-vi.php?kInput=' + phrase);
+    loading = false;
+    setState(() {});
+    var examplesList = jsonDecode(res.body)["sentences"];
+
+    setState(() {
+      loading = false;
+    });
+
+    if (wordDetails == null) {
+      setState(() {
+        noData = true;
+      });
+    } else {
+      noData = false;
+      Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => ParapharaseExamplePage(
+                      phrase: phrase, examplesList: examplesList)))
+          .then((value) => setState(() {}));
+    }
   }
 
   void searchWord(String word) async {
@@ -108,6 +138,7 @@ class _SearchPageState extends State<SearchPage> {
     suggestionList.clear();
     int suggestionListLength = 5;
 
+    all.sort();
     if (word != "" && word != null) {
       for (int i = 0; i < all.length; i++) {
         String suggestion = all[i];
@@ -129,7 +160,6 @@ class _SearchPageState extends State<SearchPage> {
     if (isEnEn) {
       result = await translator.translate(paragragh, from: 'en', to: 'vi');
     } else {
-      print("Hello");
       result = await translator.translate(paragragh, from: 'vi', to: 'en');
     }
     setState(() {
@@ -179,30 +209,32 @@ class _SearchPageState extends State<SearchPage> {
         title: Center(
             child: Text('Dictionary Settings',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))),
-        content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Container(
-                height: 200,
-                child: Column(
-                    children: DictionaryCategories.values
-                        .map((value) => Card(
-                              child: (ListTile(
-                                title: Text(generateTitle(value),
-                                    style: TextStyle(fontSize: 14)),
-                                trailing: Radio(
-                                  value: value,
-                                  groupValue: _currentCategory,
-                                  onChanged: (DictionaryCategories cate) {
-                                    setState(() {
-                                      txt.text = "";
-                                      _currentCategory = cate;
-                                    });
-                                  },
-                                ),
-                              )),
-                            ))
-                        .toList()));
-          },
+        content: SingleChildScrollView(
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Container(
+                  height: 260,
+                  child: Column(
+                      children: DictionaryCategories.values
+                          .map((value) => Card(
+                                child: (ListTile(
+                                  title: Text(generateTitle(value),
+                                      style: TextStyle(fontSize: 14)),
+                                  trailing: Radio(
+                                    value: value,
+                                    groupValue: _currentCategory,
+                                    onChanged: (DictionaryCategories cate) {
+                                      setState(() {
+                                        txt.text = "";
+                                        _currentCategory = cate;
+                                      });
+                                    },
+                                  ),
+                                )),
+                              ))
+                          .toList()));
+            },
+          ),
         ),
         actions: <Widget>[
           new FlatButton(
@@ -221,130 +253,153 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: kPrimaryColor,
-        toolbarHeight: 70,
-        title: Text(
-          "Dictionary Screen",
-          style: TextStyle(
-              fontFamily: 'Arial', fontSize: 20, color: Colors.white70),
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: kPrimaryColor,
+          toolbarHeight: 70,
+          title: Text(
+            "Dictionary Screen",
+            style: TextStyle(
+                fontFamily: 'Arial', fontSize: 20, color: Colors.white70),
+          ),
+          leading: Icon(
+            Icons.menu,
+            color: Colors.white70,
+          ),
+          actions: [
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: IconButton(
+                      icon: Icon(Icons.settings),
+                      iconSize: 35,
+                      color: Colors.white70,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => _buildPopupDialog(context),
+                        );
+                      }),
+                ))
+          ],
         ),
-        leading: Icon(
-          Icons.menu,
-          color: Colors.white70,
-        ),
-        actions: [
-          Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: IconButton(
-                    icon: Icon(Icons.settings),
-                    iconSize: 35,
-                    color: Colors.white70,
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => _buildPopupDialog(context),
-                      );
-                    }),
-              ))
-        ],
-      ),
-      body: _currentCategory != DictionaryCategories.TranslateParagraph
-          ? ModalProgressHUD(
-              inAsyncCall: loading,
-              color: Colors.black26,
-              progressIndicator: CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor),
-                backgroundColor: Colors.black12,
-                strokeWidth: 5,
-              ),
-              opacity: 0.2,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0, vertical: 80.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Dictionary",
-                      style: cTitleStyle,
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    TextField(
-                      controller: txt,
-                      onTap: () {
-                        setState(() {
-                          noData = false;
-                        });
-                      },
-                      onChanged: generateSuggestion,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18.0,
-                        fontFamily: 'ContentFont',
-                      ),
-                      cursorColor: Colors.grey,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (value) {
-                        setState(() {
-                          loading = true;
-                        });
-
-                        searchWord(value);
-                      },
-                      decoration: cSearchBoxDecoration,
-                    ),
-                    Flexible(child: buildSuggestions()),
-                    NotFoundWidget(noData: noData),
-                  ],
+        body: _currentCategory != DictionaryCategories.TranslateParagraph
+            ? ModalProgressHUD(
+                inAsyncCall: loading,
+                color: Colors.black26,
+                progressIndicator: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(kPrimaryColor),
+                  backgroundColor: Colors.black12,
+                  strokeWidth: 5,
                 ),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  TextField(
-                      controller: txt,
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                        hintText: 'Enter a phrase, a sentence or a paragraph',
-                      )),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        FlatButton(
-                          child: Text("English-Vienamese",
-                              style: TextStyle(color: Colors.white)),
-                          onPressed: () {
-                            print("En-Vi");
-                            translateParagraph(txt.text, true);
-                          },
-                          color: Color.fromARGB(255, 146, 89, 155),
+                opacity: 0.2,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0, vertical: 80.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        _currentCategory ==
+                                DictionaryCategories.EnglishParaphrase
+                            ? "Sentence Paraphrase"
+                            : "Dictionary",
+                        style: cTitleStyle,
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      TextField(
+                        controller: txt,
+                        onTap: () {
+                          setState(() {
+                            noData = false;
+                          });
+                        },
+                        onChanged: generateSuggestion,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18.0,
+                          fontFamily: 'ContentFont',
                         ),
-                        FlatButton(
-                            child: Text("Vietnamese-English",
+                        cursorColor: Colors.grey,
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (value) {
+                          setState(() {
+                            loading = true;
+                          });
+
+                          _currentCategory ==
+                                  DictionaryCategories.EnglishParaphrase
+                              ? searchParaphrase(value)
+                              : searchWord(value);
+                        },
+                        decoration: _currentCategory ==
+                                DictionaryCategories.EnglishParaphrase
+                            ? cParaphraseDecoration
+                            : cSearchBoxDecoration,
+                      ),
+                      Flexible(child: buildSuggestions()),
+                      NotFoundWidget(noData: noData),
+                    ],
+                  ),
+                ),
+              )
+            :
+            //  (_currentCategory == DictionaryCategories.TranslateParagraph)
+            //     ?
+            Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Card(
+                      elevation: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            controller: txt,
+                            maxLines: 6,
+                            decoration: InputDecoration(
+                              hintText:
+                                  'Enter a phrase, a sentence or a paragraph',
+                            )),
+                      ),
+                    ),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          FlatButton(
+                            child: Text("English-Vienamese",
                                 style: TextStyle(color: Colors.white)),
                             onPressed: () {
-                              print("Vi-En");
-                              translateParagraph(txt.text, false);
+                              print("En-Vi");
+                              translateParagraph(txt.text, true);
                             },
-                            color: Color.fromARGB(255, 146, 89, 155))
-                      ],
+                            color: Color.fromARGB(255, 146, 89, 155),
+                          ),
+                          FlatButton(
+                              child: Text("Vietnamese-English",
+                                  style: TextStyle(color: Colors.white)),
+                              onPressed: () {
+                                print("Vi-En");
+                                translateParagraph(txt.text, false);
+                              },
+                              color: Color.fromARGB(255, 146, 89, 155))
+                        ],
+                      ),
                     ),
-                  ),
-                  TextField(
-                      maxLines: 10,
-                      enabled: false,
-                      decoration: InputDecoration(hintText: meaning)),
-                ],
-              ),
-            ),
-    );
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TextField(
+                            maxLines: 6,
+                            enabled: false,
+                            decoration: InputDecoration(hintText: meaning)),
+                      ),
+                    ),
+                  ],
+                ),
+              ));
   }
 }
