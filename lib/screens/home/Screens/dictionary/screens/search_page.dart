@@ -26,6 +26,7 @@ class _SearchPageState extends State<SearchPage> {
   DictionaryCategories _currentCategory = DictionaryCategories.EnEn;
   final translator = GoogleTranslator();
   List<Map> wordDetails = [];
+  String meaning = "";
 
   List<String> suggestionList = [];
   TextEditingController txt = TextEditingController();
@@ -51,11 +52,10 @@ class _SearchPageState extends State<SearchPage> {
   Future generateWordDetails(String word) async {
     wordDetails.clear();
     Translation result = await translator.translate(word, from: 'en', to: 'vi');
-    var x;
+    var eg;
     try {
-      print("Hello");
       var sentences = await Services.getSentences(word);
-      x = (sentences[1].fields.toJson());
+      eg = (sentences[1].fields.toJson());
     } catch (e) {
       // throw Exception(e.toString());
       print('Timeout');
@@ -64,7 +64,7 @@ class _SearchPageState extends State<SearchPage> {
       wordDetails.add({
         "type": "nouns",
         "def": result.toString(),
-        "eg": 'Eg: ${x["en"]} (${x["vi"]})',
+        "eg": 'Eg: ${eg["en"]} (${eg["vi"]})',
         "image_url": null,
         "emoji": null
       });
@@ -124,6 +124,20 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {});
   }
 
+  void translateParagraph(paragragh, bool isEnEn) async {
+    Translation result;
+    if (isEnEn) {
+      result = await translator.translate(paragragh, from: 'en', to: 'vi');
+    } else {
+      print("Hello");
+      result = await translator.translate(paragragh, from: 'vi', to: 'en');
+    }
+    setState(() {
+      meaning = result.toString();
+    });
+    print(result.toString());
+  }
+
   Widget buildSuggestions() {
     return ListView.builder(
         itemCount: suggestionList.length,
@@ -180,6 +194,7 @@ class _SearchPageState extends State<SearchPage> {
                                   groupValue: _currentCategory,
                                   onChanged: (DictionaryCategories cate) {
                                     setState(() {
+                                      txt.text = "";
                                       _currentCategory = cate;
                                     });
                                   },
@@ -289,7 +304,47 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             )
-          : Text('Translate Paragraph'),
+          : Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  TextField(
+                      controller: txt,
+                      maxLines: 10,
+                      decoration: InputDecoration(
+                        hintText: 'Enter a phrase, a sentence or a paragraph',
+                      )),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        FlatButton(
+                          child: Text("English-Vienamese",
+                              style: TextStyle(color: Colors.white)),
+                          onPressed: () {
+                            print("En-Vi");
+                            translateParagraph(txt.text, true);
+                          },
+                          color: Color.fromARGB(255, 146, 89, 155),
+                        ),
+                        FlatButton(
+                            child: Text("Vietnamese-English",
+                                style: TextStyle(color: Colors.white)),
+                            onPressed: () {
+                              print("Vi-En");
+                              translateParagraph(txt.text, false);
+                            },
+                            color: Color.fromARGB(255, 146, 89, 155))
+                      ],
+                    ),
+                  ),
+                  TextField(
+                      maxLines: 10,
+                      enabled: false,
+                      decoration: InputDecoration(hintText: meaning)),
+                ],
+              ),
+            ),
     );
   }
 }
