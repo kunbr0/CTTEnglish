@@ -27,11 +27,7 @@ const cCategoryTextStyle = TextStyle(
   fontSize: 16.0,
 //  fontFamily: 'ContentFont',
 );
-const cDefinitionTextStyle = TextStyle(
-  fontSize: 18.0,
-  height: 1.2,
-  fontFamily: 'ContentFont',
-);
+const cDefinitionTextStyle = TextStyle(fontSize: 18.0, height: 1.2);
 
 const cWordStyle = TextStyle(
   fontSize: 60.0,

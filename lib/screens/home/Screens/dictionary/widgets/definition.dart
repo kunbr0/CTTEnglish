@@ -19,6 +19,7 @@ class Definition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(wordDetails[index]['def'].toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -36,18 +37,13 @@ class Definition extends StatelessWidget {
             //Index Text
             Text(
               '${(index + 1).toString()}.  ',
-              style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontFamily: 'ContentFont',
-                  fontSize: 14.0),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.0),
             ),
 
             //Definition Text
             Expanded(
               child: Text(
-                wordDetails[index]['def']
-                    .toString()
-                    .replaceAll(new RegExp(r'[^\w\s]+'), ''),
+                wordDetails[index]['def'].toString(),
                 style: cDefinitionTextStyle,
               ),
             ),
@@ -59,8 +55,7 @@ class Definition extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 15.0),
           child: Text(
-            _parseHtmlString('${wordDetails[index]['eg'].toString()}')
-                .replaceAll(new RegExp(r'[^\w\s]+'), ' '),
+            _parseHtmlString('${wordDetails[index]['eg'].toString()}'),
             style: cExampleTextStyle,
           ),
         ),

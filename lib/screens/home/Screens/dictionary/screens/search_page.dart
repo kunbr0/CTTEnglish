@@ -2,14 +2,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:translator/translator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../services/NetworkHelper.dart';
 import '../screens/word_page.dart';
 import '../constant.dart';
 import '../widgets/not_found.dart';
 import 'package:cttenglish/constants.dart';
+import './../../../../../models/Service.dart';
 
-enum DictionaryCategories { EnEn, EnVi, ViEn }
+enum DictionaryCategories { EnEn, EnVi, TranslateParagraph }
 
 class SearchPage extends StatefulWidget {
   @override
@@ -20,6 +24,8 @@ class _SearchPageState extends State<SearchPage> {
   bool loading = false;
   bool noData = false;
   DictionaryCategories _currentCategory = DictionaryCategories.EnEn;
+  final translator = GoogleTranslator();
+  List<Map> wordDetails = [];
 
   List<String> suggestionList = [];
   TextEditingController txt = TextEditingController();
@@ -33,8 +39,8 @@ class _SearchPageState extends State<SearchPage> {
       case DictionaryCategories.EnVi:
         result = "English-Vietnamese";
         break;
-      case DictionaryCategories.ViEn:
-        result = "Vietnamese-English";
+      case DictionaryCategories.TranslateParagraph:
+        result = "Translate Paragraph";
         break;
       default:
         break;
@@ -42,42 +48,37 @@ class _SearchPageState extends State<SearchPage> {
     return result;
   }
 
-  List<Map> generateWordDetails() {
-    return [
-      {
-        "type": "exclamation",
-        "def":
-            "used as a greeting or to begin a telephone conversation.",
-        "eg": "hello there, Katie!",
+  Future generateWordDetails(String word) async {
+    wordDetails.clear();
+    Translation result = await translator.translate(word, from: 'en', to: 'vi');
+    var x;
+    try {
+      print("Hello");
+      var sentences = await Services.getSentences(word);
+      x = (sentences[1].fields.toJson());
+    } catch (e) {
+      // throw Exception(e.toString());
+      print('Timeout');
+    }
+    setState(() {
+      wordDetails.add({
+        "type": "nouns",
+        "def": result.toString(),
+        "eg": 'Eg: ${x["en"]} (${x["vi"]})',
         "image_url": null,
         "emoji": null
-      },
-      {
-        "type": "noun",
-        "def": "an utterance of ; a greeting.",
-        "eg": "she was getting polite nods and hellos from people",
-        "image_url": null,
-        "emoji": null
-      },
-      {
-        "type": "verb",
-        "def": "say or shout âhelloâ",
-        "eg": "I pressed the phone button and helloed",
-        "image_url": null,
-        "emoji": null
-      }
-    ];
+      });
+    });
   }
 
   void searchWord(String word) async {
     NetworkHelper networkHelper = NetworkHelper();
-    List<Map> wordDetails = [];
     switch (_currentCategory) {
       case DictionaryCategories.EnEn:
         wordDetails = await networkHelper.getData(word);
         break;
       case DictionaryCategories.EnVi:
-        wordDetails = generateWordDetails();
+        await generateWordDetails(word);
         break;
       default:
         break;
@@ -235,7 +236,7 @@ class _SearchPageState extends State<SearchPage> {
               ))
         ],
       ),
-      body: _currentCategory != DictionaryCategories.ViEn
+      body: _currentCategory != DictionaryCategories.TranslateParagraph
           ? ModalProgressHUD(
               inAsyncCall: loading,
               color: Colors.black26,
@@ -288,7 +289,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             )
-          : Text('ViEn'),
+          : Text('Translate Paragraph'),
     );
   }
 }
