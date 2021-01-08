@@ -5,6 +5,10 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/material.dart';
+import 'package:highlight_text/highlight_text.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../services/NetworkHelper.dart';
 import '../screens/word_page.dart';
@@ -22,6 +26,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+  String _text = 'Press the button and start speaking';
+  double _confidence = 1.0;
+
   bool loading = false;
   bool noData = false;
   DictionaryCategories _currentCategory = DictionaryCategories.EnEn;
@@ -203,7 +212,7 @@ class _SearchPageState extends State<SearchPage> {
         });
   }
 
-  Widget _buildPopupDialog(BuildContext context) {
+  Widget _buildSettingDialog(BuildContext context) {
     return SafeArea(
       child: AlertDialog(
         title: Center(
@@ -250,6 +259,107 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  Widget _buildVoicePanel(BuildContext context) {
+    return SafeArea(
+      child: AlertDialog(content: SingleChildScrollView(
+        child: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 150.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    _text,
+                    style: const TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  AvatarGlow(
+                    animate: _isListening,
+                    glowColor: Theme.of(context).primaryColor,
+                    endRadius: 75.0,
+                    duration: const Duration(milliseconds: 2000),
+                    repeatPauseDuration: const Duration(milliseconds: 100),
+                    repeat: true,
+                    child: FloatingActionButton(
+                      onPressed: () async {
+                        if (!_isListening) {
+                          bool available = await _speech.initialize(
+                            onStatus: (val) => print('onStatus: $val'),
+                            onError: (val) => print('onError: $val'),
+                          );
+                          if (available) {
+                            setState(() => _isListening = true);
+                            await _speech.listen(
+                              onResult: (val) => setState(() {
+                                _text = val.recognizedWords;
+                                print(_text);
+                                print("Hu");
+                                if (val.hasConfidenceRating &&
+                                    val.confidence > 0) {
+                                  _confidence = val.confidence;
+                                }
+                              }),
+                            );
+
+                            Future.delayed(const Duration(milliseconds: 5000),
+                                () {
+                              // Here you can write your code
+                              Navigator.pop(context);
+                              setState(() {
+                                // Here you can write your code for open new view
+                                txt.text = _text;
+                              });
+                              _isListening = false;
+                              _text = "";
+                            });
+                          }
+                        } else {
+                          setState(() => _isListening = false);
+                          _speech.stop();
+                        }
+                      },
+                      child: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                    ),
+                  ),
+                  Text("Press the micro button to start to speak")
+                ],
+              ),
+            );
+          },
+        ),
+      )),
+    );
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        await _speech.listen(
+          onResult: (val) => setState(() {
+            _text = val.recognizedWords;
+            print(_text);
+            if (val.hasConfidenceRating && val.confidence > 0) {
+              _confidence = val.confidence;
+            }
+            // Navigator.pop(context, true);
+          }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,17 +380,16 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Center(
-                  child: IconButton(
-                      icon: Icon(Icons.settings),
-                      iconSize: 35,
-                      color: Colors.white70,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => _buildPopupDialog(context),
-                        );
-                      }),
-                ))
+                    child: IconButton(
+                        icon: Icon(Icons.settings),
+                        iconSize: 35,
+                        color: Colors.white70,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => _buildSettingDialog(context),
+                          );
+                        })))
           ],
         ),
         body: _currentCategory != DictionaryCategories.TranslateParagraph
@@ -337,7 +446,31 @@ class _SearchPageState extends State<SearchPage> {
                         decoration: _currentCategory ==
                                 DictionaryCategories.EnglishParaphrase
                             ? cParaphraseDecoration
-                            : cSearchBoxDecoration,
+                            : InputDecoration(
+                                filled: true,
+                                fillColor: Color(0xFFEAEAEA),
+                                hintText: 'search here',
+                                hintStyle: TextStyle(
+                                  color: Colors.black26,
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  size: 30.0,
+                                  color: Colors.black26,
+                                ),
+                                suffixIcon: IconButton(
+                                    icon: Icon(Icons.mic),
+                                    iconSize: 30,
+                                    color: Colors.black26,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            _buildVoicePanel(context),
+                                      );
+                                    }),
+                                border: InputBorder.none,
+                              ),
                       ),
                       Flexible(child: buildSuggestions()),
                       NotFoundWidget(noData: noData),
