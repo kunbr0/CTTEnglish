@@ -1,15 +1,14 @@
 
+import 'dart:ffi';
+
 import 'package:cttenglish/constants.dart';
-import 'package:cttenglish/screens/authenticate/components/rounded_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
-import 'package:english_words/english_words.dart';
 
 
 class VideoScreen extends StatefulWidget {
@@ -35,6 +34,7 @@ class _VideoScreenState extends State<VideoScreen> {
     final int intervalSyncTime = 200;
     final double minHeightOfAnswerModal = 200;
 
+    Function _setStateModalBottom;
 
     AutoScrollController _captionScrollController;
     YoutubePlayerController _youtubeController;
@@ -44,6 +44,8 @@ class _VideoScreenState extends State<VideoScreen> {
     bool _muted = false;
     bool _isPlayerReady = false;
     bool _isPlayerPlaying = false;
+
+    String _answerValue;
 
     int _playOption = 0;
 
@@ -61,13 +63,13 @@ class _VideoScreenState extends State<VideoScreen> {
         viewportBoundaryGetter: () =>
             Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
         axis: scrollDirection);
-        _captionScrollController.addListener(_captionScrollListener);
+        
         
         _youtubeController = YoutubePlayerController(
         initialVideoId: YoutubePlayer.convertUrlToId(
-            "https://www.youtube.com/watch?v=3VTsIju1dLI"),
+            "3VTsIju1dLI"),
         flags: YoutubePlayerFlags(
-            autoPlay: true,
+            autoPlay: false,
             mute: false,
             disableDragSeek: false,
             loop: false,
@@ -80,7 +82,33 @@ class _VideoScreenState extends State<VideoScreen> {
         _lastSyncTime = getKTime();
         _caption = new _Caption();
         _playOption = 0;
+        _answerValue = "";
     }
+    
+    void youtubePlayerListener() {
+        
+        if(!isReadyForNextSync()) return;
+
+        setState(() {
+            _isPlayerReady = _youtubeController.value.isReady;
+            _isPlayerPlaying = _youtubeController.value.isPlaying;
+        });
+        
+        if (_isPlayerReady && _caption.statusCode == 0) {
+            setState(() {
+                _caption.statusCode = 1;
+            });
+            getCaption("3VTsIju1dLI");
+        }
+
+        if(_isPlayerPlaying){
+            syncCurrentIndexWithPlayingTime(_currentIndex);
+            _lastSyncTime = getKTime();
+        }
+    }
+
+    
+    
 
     String cleanString (str){
         String result = str.toString().replaceAll("\n", "");
@@ -127,7 +155,6 @@ class _VideoScreenState extends State<VideoScreen> {
 
     void getCaption(videoId) async {
         debugPrint("Getting Caption " + videoId + " ..." );
-         _youtubeController.pause();
         var url = "https://api.kunbr0.com/youtube/kun/kun/getCaption.php?url=" + videoId;
         var response = await http.get(url);
         if (response.statusCode == 200) {
@@ -161,10 +188,7 @@ class _VideoScreenState extends State<VideoScreen> {
         
         _lastSyncTime = getKTime();
     }
-    void _captionScrollListener() {
-        
-    }
-
+    
     
 
     bool isReadyForNextSync(){
@@ -185,7 +209,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     if(crIndex != _currentIndex && isReadyForNextSync()){
                         if(_playOption == 2) {
                             _youtubeController.pause();
-                            _showQuestionModal(_caption.captionWithMissingData[crIndex-1],crIndex,context);
+                            _showQuestionModal(_caption.captionWithMissingData[crIndex-1],crIndex-1);
                         }
                         else updateCurrentIndex(crIndex);
                         
@@ -206,7 +230,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 if(currentPlayingTime > nextTime){
                     if(_playOption == 2) {
                         _youtubeController.pause();
-                        _showQuestionModal(_caption.captionWithMissingData[crIndex],crIndex+1,context);
+                        _showQuestionModal(_caption.captionWithMissingData[crIndex],crIndex);
                     }
                     else updateCurrentIndex(crIndex + 1);
                 } 
@@ -218,30 +242,6 @@ class _VideoScreenState extends State<VideoScreen> {
         }
     }
 
-    void youtubePlayerListener() {
-        
-        if(!isReadyForNextSync()) return;
-
-        setState(() {
-            _isPlayerReady = _youtubeController.value.isReady;
-            _isPlayerPlaying = _youtubeController.value.isPlaying;
-        });
-
-        if (_isPlayerReady && _youtubeController.metadata.videoId != "" &&  _caption.statusCode == 0) {
-            setState(() {
-                _caption.statusCode = 1;
-            });
-            getCaption(_youtubeController.metadata.videoId);
-        }
-
-        if(_isPlayerPlaying){
-            syncCurrentIndexWithPlayingTime(_currentIndex);
-            _lastSyncTime = getKTime();
-        }
-    }
-
-    
-    
 
     Widget _playOptionWidget(IconData iconData, String mainTitle, optionId){
         return 
@@ -315,57 +315,40 @@ class _VideoScreenState extends State<VideoScreen> {
 
 
     void _closeModal(int nextSente) {
+        setState((){
+            _answerValue = "";
+        });
         _youtubeController.play();
         updateCurrentIndex(nextSente);
     }
-    void _cShowModalBottomSheet(Widget kChild, int nextSente) {
-        
-        Future<void> future = showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            elevation: 10,
-            builder: (context) {
-                double modalHeight = MediaQuery.of(context).size.height * 0.25;
-                if(modalHeight < minHeightOfAnswerModal) modalHeight = minHeightOfAnswerModal;
-                return Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                height:  modalHeight,
-                child: SizedBox.expand(
-                    child: SingleChildScrollView(
-                    child: kChild,
-                    )
-                
-                ),
-                );
-            });
-        future.then((void value) => _closeModal(nextSente));
-    }
 
-    String randomFalseAnswer(String correctAnswer){
-        //int correctAnswerSyllables = syllables(correctAnswer);
-        
-        return generateWordPairs(maxSyllables: 2).take(1).elementAt(0).toString();
-    }
-
-    Widget _answerButton(int thisIndex, int correctIndex, String correctAnswer){
+    Widget _answerButton(String value, Function onPress, [Color btnColor = kAnswerBtnColor] ){
         return RawMaterialButton(
-            onPressed: (){},
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.35,
-                alignment: Alignment.center,
-                child: thisIndex == correctIndex ? Text(correctAnswer) : Text(randomFalseAnswer(correctAnswer)),
-            ),
-            fillColor: Colors.green[100],
+            onPressed: (){
+                
+                onPress();
+                _setStateModalBottom((){});
+            },
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(8),
+            child: Text(value),
+            fillColor: btnColor,
             elevation: 0,
             
         );
     }
 
-    void _showQuestionModal(
-        String paragraph, int nextSentence, BuildContext screenContext) {
-        int correctIndex = kRandomNumber(0, 3);
-        _cShowModalBottomSheet(
-            Column(children: [
+    List<Widget> _generateAnswerBtns (String correctAnswer) {
+        return correctAnswer.split('').map<Widget>((e)=>_answerButton(e, (){
+            setState(() {
+                _answerValue = _answerValue + e.toString();
+            });
+        })).toList();
+    }
+
+
+    Widget _modalBottomContent (String paragraph, int currentSenteIndex){
+        return Column(children: [
                 SizedBox(height: 10),
 
                 Text(paragraph,
@@ -376,27 +359,85 @@ class _VideoScreenState extends State<VideoScreen> {
                     )
                 ),
 
-                SizedBox(height: 10),
+                SizedBox(height: 5),
+                Row(children: [
+                    Expanded(
+                        child: Container(
+                            margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            color: Colors.amber[200],
+                            width: double.infinity,
+                            padding: EdgeInsets.all(8),
+                            child: Text(_answerValue),
+
+                        ),
+                    ),
+                    _answerButton("Delete", (){
+                        if (_answerValue != null && _answerValue.length > 0) {
+                            setState((){
+                                _answerValue = _answerValue.substring(0, _answerValue.length - 1);
+                            });
+                        }
+                        
+                    }, kDeleteBtnColor)
+                ],),
+                SizedBox(height: 5),
+                Wrap(
+                    
+                    children: _generateAnswerBtns(_caption.correctAnswers[currentSenteIndex]),
+                ),
                 
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                        _answerButton(1, correctIndex, _caption.correctAnswers[nextSentence-1]),
-                        _answerButton(2, correctIndex, _caption.correctAnswers[nextSentence-1]),
-                    ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                        _answerButton(3, correctIndex, _caption.correctAnswers[nextSentence-1]),
-                        _answerButton(4, correctIndex, _caption.correctAnswers[nextSentence-1]),
-                    ],
-                ),
             
             ]
-            ),
-            nextSentence
+        );
+    }
+
+    void _cShowModalBottomSheet(String sente, int currentSenteIndex) {
+        
+        Future<void> future = showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            elevation: 10,
+            builder: (BuildContext context) {
+                double modalHeight = MediaQuery.of(context).size.height * 0.25;
+                if(modalHeight < minHeightOfAnswerModal) modalHeight = minHeightOfAnswerModal;
+                return BottomSheet(
+                    onDragStart: (a){},
+                    onClosing: (){}, 
+                    builder: (BuildContext context){
+                        return StatefulBuilder(
+                            builder: (BuildContext context, setState){
+                                _setStateModalBottom = setState;
+                                if(_answerValue == _caption.correctAnswers[currentSenteIndex]){
+                                    Navigator.pop(context);
+                                }
+                                return Container(
+                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                    height:  modalHeight,
+                                    child: SizedBox.expand(
+                                        child: SingleChildScrollView(
+                                            child: _modalBottomContent(sente, currentSenteIndex),
+                                        )
+                                    
+                                    ),
+                                );
+                            }
+                        );
+                    }
+                );
+            });
+        
+        future.then((void value) => _closeModal(currentSenteIndex+1));
+    }
+
+    
+
+   
+    void _showQuestionModal(
+        String paragraph, int currentSenteIndex) {
+
+        _cShowModalBottomSheet(
+            paragraph,
+            currentSenteIndex
         );
     }
 
