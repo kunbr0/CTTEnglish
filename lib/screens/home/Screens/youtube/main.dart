@@ -33,7 +33,7 @@ class _VideoScreenState extends State<VideoScreen> {
     final Color currentPlayingRow = Colors.yellow[100];
     final scrollDirection = Axis.vertical;
     final int intervalSyncTime = 200;
-    
+    final double minHeightOfAnswerModal = 200;
 
 
     AutoScrollController _captionScrollController;
@@ -319,14 +319,17 @@ class _VideoScreenState extends State<VideoScreen> {
         updateCurrentIndex(nextSente);
     }
     void _cShowModalBottomSheet(Widget kChild, int nextSente) {
+        
         Future<void> future = showModalBottomSheet<void>(
             context: context,
             isScrollControlled: true,
             elevation: 10,
             builder: (context) {
+                double modalHeight = MediaQuery.of(context).size.height * 0.25;
+                if(modalHeight < minHeightOfAnswerModal) modalHeight = minHeightOfAnswerModal;
                 return Container(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                height: MediaQuery.of(context).size.height * 0.25,
+                height:  modalHeight,
                 child: SizedBox.expand(
                     child: SingleChildScrollView(
                     child: kChild,
