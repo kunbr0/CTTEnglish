@@ -44,6 +44,7 @@ class _VideoScreenState extends State<VideoScreen> {
     bool _muted = false;
     bool _isPlayerReady = false;
     bool _isPlayerPlaying = false;
+    bool _isOpenBottomModal = false;
 
     String _answerValue;
 
@@ -69,14 +70,15 @@ class _VideoScreenState extends State<VideoScreen> {
         initialVideoId: YoutubePlayer.convertUrlToId(
             "3VTsIju1dLI"),
         flags: YoutubePlayerFlags(
-            autoPlay: false,
+            autoPlay: true,
             mute: false,
             disableDragSeek: false,
             loop: false,
             isLive: false,
             forceHD: false,
             hideControls: true,
-            enableCaption: false
+            enableCaption: false,
+            controlsVisibleAtStart: false,
         ),
         )..addListener(youtubePlayerListener);
         _lastSyncTime = getKTime();
@@ -87,19 +89,22 @@ class _VideoScreenState extends State<VideoScreen> {
     
     void youtubePlayerListener() {
         
+        if (_youtubeController.value.metaData.videoId.toString().length > 0 && _caption.statusCode == 0) {
+            _youtubeController.pause();
+            setState(() {
+                _caption.statusCode = 1;
+            });
+            getCaption(_youtubeController.value.metaData.videoId.toString());
+        }
+
         if(!isReadyForNextSync()) return;
 
         setState(() {
             _isPlayerReady = _youtubeController.value.isReady;
             _isPlayerPlaying = _youtubeController.value.isPlaying;
         });
+        debugPrint("Video id: " + _youtubeController.value.metaData.videoId.toString());
         
-        if (_isPlayerReady && _caption.statusCode == 0) {
-            setState(() {
-                _caption.statusCode = 1;
-            });
-            getCaption("3VTsIju1dLI");
-        }
 
         if(_isPlayerPlaying){
             syncCurrentIndexWithPlayingTime(_currentIndex);
@@ -318,39 +323,71 @@ class _VideoScreenState extends State<VideoScreen> {
         setState((){
             _answerValue = "";
         });
+        _isOpenBottomModal = false;
         _youtubeController.play();
+        _lastSyncTime = getKTime();
         updateCurrentIndex(nextSente);
     }
 
-    Widget _answerButton(String value, Function onPress, [Color btnColor = kAnswerBtnColor] ){
-        return RawMaterialButton(
-            onPressed: (){
-                
-                onPress();
-                _setStateModalBottom((){});
-            },
-            constraints: BoxConstraints(),
-            padding: EdgeInsets.all(8),
-            child: Text(value),
-            fillColor: btnColor,
-            elevation: 0,
+    Widget _answerButton(
+        String value, Function onPress, 
+        {Color btnColor = kAnswerBtnColor, double kWidth = 28, TextStyle textStyle = const TextStyle(fontSize: 15)} 
+    ){
+        return Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(3),
+            width: kWidth,
+            height: 30,
+            color: Colors.green[50],
+            child: RawMaterialButton(
             
+                onPressed: (){
+                    
+                    onPress();
+                    _setStateModalBottom((){});
+                },
+                child: Text(
+                    value,
+                    style: textStyle,
+                ),
+                fillColor: btnColor,
+                elevation: 0,
+                
+            ),
         );
     }
 
     List<Widget> _generateAnswerBtns (String correctAnswer) {
-        return correctAnswer.split('').map<Widget>((e)=>_answerButton(e, (){
-            setState(() {
-                _answerValue = _answerValue + e.toString();
-            });
-        })).toList();
+        
+        String keyboardPattern = "QWERTYUIOP-ASDFGHJKL'-ZXCVBNM,.";
+
+        // = ( screen width - 10 ) / numOfKey - 2*marginLeftRight
+        double kWidth = (MediaQuery.of(context).size.width - 10) / 10 - 6;
+        List<Widget> generateRowElm(String kContent){
+            return kContent.split('').map<Widget>((e){
+                return _answerButton(e.toUpperCase(), (){
+                            setState(() {
+                                _answerValue = _answerValue + e.toUpperCase().toString();
+                            });
+                        }, kWidth: kWidth);
+            }).toList();
+        }
+
+        return keyboardPattern.split('-').map<Row>((kRow)=>Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: generateRowElm(kRow),
+        )).toList();
+
+        
+
+        
     }
 
 
-    Widget _modalBottomContent (String paragraph, int currentSenteIndex){
-        return Column(children: [
-                SizedBox(height: 10),
+    Widget _modalBottomContent (String paragraph, String correctAnswerWithOtherChars){
+        
 
+        return Column(children: [
                 Text(paragraph,
                     style: TextStyle(
                         fontSize: 18,
@@ -371,20 +408,23 @@ class _VideoScreenState extends State<VideoScreen> {
 
                         ),
                     ),
-                    _answerButton("Delete", (){
-                        if (_answerValue != null && _answerValue.length > 0) {
-                            setState((){
-                                _answerValue = _answerValue.substring(0, _answerValue.length - 1);
-                            });
-                        }
-                        
-                    }, kDeleteBtnColor)
+                    _answerButton(
+                        "Delete", 
+                        (){
+                            if (_answerValue != null && _answerValue.length > 0) {
+                                setState((){
+                                    _answerValue = _answerValue.substring(0, _answerValue.length - 1);
+                                });
+                            }
+                        }, 
+                        btnColor: kDeleteBtnColor, 
+                        kWidth: 55
+                    )
                 ],),
                 SizedBox(height: 5),
-                Wrap(
-                    
-                    children: _generateAnswerBtns(_caption.correctAnswers[currentSenteIndex]),
-                ),
+                Wrap(children: _generateAnswerBtns(correctAnswerWithOtherChars)),
+                
+                
                 
             
             ]
@@ -398,8 +438,6 @@ class _VideoScreenState extends State<VideoScreen> {
             isScrollControlled: true,
             elevation: 10,
             builder: (BuildContext context) {
-                double modalHeight = MediaQuery.of(context).size.height * 0.25;
-                if(modalHeight < minHeightOfAnswerModal) modalHeight = minHeightOfAnswerModal;
                 return BottomSheet(
                     onDragStart: (a){},
                     onClosing: (){}, 
@@ -407,15 +445,15 @@ class _VideoScreenState extends State<VideoScreen> {
                         return StatefulBuilder(
                             builder: (BuildContext context, setState){
                                 _setStateModalBottom = setState;
-                                if(_answerValue == _caption.correctAnswers[currentSenteIndex]){
+                                if(_answerValue.toUpperCase() == _caption.correctAnswers[currentSenteIndex].toUpperCase()){
                                     Navigator.pop(context);
                                 }
                                 return Container(
-                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                                    height:  modalHeight,
+                                    padding: EdgeInsets.fromLTRB(5,10,5,0),
+                                    height:  sente.length < 48 ? 195 : 215,
                                     child: SizedBox.expand(
                                         child: SingleChildScrollView(
-                                            child: _modalBottomContent(sente, currentSenteIndex),
+                                            child: _modalBottomContent(sente, "QWERTYUIOP"),
                                         )
                                     
                                     ),
@@ -429,16 +467,18 @@ class _VideoScreenState extends State<VideoScreen> {
         future.then((void value) => _closeModal(currentSenteIndex+1));
     }
 
-    
-
    
     void _showQuestionModal(
-        String paragraph, int currentSenteIndex) {
-
-        _cShowModalBottomSheet(
-            paragraph,
-            currentSenteIndex
-        );
+        String sente, int currentSenteIndex) {
+        if(_isOpenBottomModal == false){
+            _isOpenBottomModal = true;
+            _cShowModalBottomSheet(
+                sente,
+                currentSenteIndex
+            );
+            
+        }
+       
     }
 
     Widget _captionRow(AutoScrollController controller, int index, String caption, double time){
