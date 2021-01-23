@@ -8,29 +8,22 @@ import 'package:flutter/material.dart';
 import '../widgets/definition_list_view.dart';
 import '../services/SpeakerHelper.dart';
 
-class WordPage extends StatelessWidget {
+class WordPage extends StatefulWidget {
   final wordDetails;
   final word;
-  // FlutterTts tts = new FlutterTts();
 
   WordPage({this.wordDetails, this.word});
 
-  // Future _speak() async {
-  //   await tts.setSpeechRate(.8);
-  //   await tts.setPitch(1);
-  //   await tts.setLanguage("en-US");
+  @override
+  _WordPageState createState() => _WordPageState();
+}
 
-  //   if ("_newVoiceText" != null) {
-  //     if ("_newVoiceText".isNotEmpty) {
-  //       await tts.awaitSpeakCompletion(true);
-  //       await tts.speak(word);
-  //     }
-  //   }
-  // }
+class _WordPageState extends State<WordPage> {
+  bool saved = false;
 
   List<Column> definitions() {
     List<Column> definitions = [];
-    for (var word in wordDetails) {
+    for (var word in widget.wordDetails) {
       String singleDefinition = word['def'];
 
       var oneDefinition = Column(
@@ -66,10 +59,34 @@ class WordPage extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(top: 30.0),
-                  child: Text(
-                    word.toString().toLowerCase(),
-                    // wordDetails['word'],
-                    style: cWordStyle,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.word.toString().toLowerCase(),
+                        style: cWordStyle,
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            iconSize: 40,
+                            onPressed: () {},
+                          ),
+                          IconButton(
+                            icon: saved
+                                ? Icon(Icons.star)
+                                : Icon(Icons.star_border),
+                            iconSize: 40,
+                            onPressed: () {
+                              setState(() {
+                                saved = !saved;
+                              });
+                            },
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
                 SizedBox(height: 20.0),
@@ -81,7 +98,7 @@ class WordPage extends StatelessWidget {
                     ),
                     SizedBox(width: 3.0),
                     Text(
-                      wordDetails.length.toString(),
+                      widget.wordDetails.length.toString(),
                       style: TextStyle(
                           color: Colors.black26,
                           fontWeight: FontWeight.w700,
@@ -91,7 +108,7 @@ class WordPage extends StatelessWidget {
                       icon: Icon(Icons.mic),
                       iconSize: 35,
                       onPressed: () async {
-                        await SpeakerHelper.speak(this.word);
+                        await SpeakerHelper.speak(this.widget.word);
                       },
                     )
                   ],
@@ -100,7 +117,7 @@ class WordPage extends StatelessWidget {
                   height: 15.0,
                 ),
                 Expanded(
-                  child: DefinitionsListView(wordDetails: wordDetails),
+                  child: DefinitionsListView(wordDetails: widget.wordDetails),
                 ),
               ],
             ),

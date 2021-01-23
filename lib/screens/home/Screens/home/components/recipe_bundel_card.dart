@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cttenglish/models/RecipeBundel.dart';
+import '../screens/book_home.dart';
 
 import 'package:cttenglish/size_config.dart';
 
@@ -15,7 +16,12 @@ class RecipeBundelCard extends StatelessWidget {
     double defaultSize = SizeConfig.defaultSize;
     // Now we dont this Aspect ratio
     return GestureDetector(
-      onTap: press,
+      onTap: () {
+        print(recipeBundle.title);
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return BookHome();
+        }));
+      },
       child: Container(
         decoration: BoxDecoration(
           color: recipeBundle.color,

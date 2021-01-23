@@ -9,19 +9,28 @@ import 'package:cttenglish/size_config.dart';
 class Categories extends StatefulWidget {
   final Function onChangeCategoryIndex;
 
-  Categories({this.onChangeCategoryIndex}); 
-
-  
+  Categories({this.onChangeCategoryIndex});
 
   @override
-  _CategoriesState createState() => _CategoriesState(onChangeCategoryIndex: onChangeCategoryIndex);
+  _CategoriesState createState() =>
+      _CategoriesState(onChangeCategoryIndex: onChangeCategoryIndex);
 }
 
 class _CategoriesState extends State<Categories> {
   final Function onChangeCategoryIndex;
   _CategoriesState({this.onChangeCategoryIndex});
 
-  List<String> categories = ["All", "Newspaper", "Ielts", "Toeic", "Magazine", "Reading", "Listening", "Writting", "Speaking"];
+  List<String> categories = [
+    "All",
+    "Newspaper",
+    "Ielts",
+    "Toeic",
+    "Magazine",
+    "Reading",
+    "Listening",
+    "Writting",
+    "Speaking"
+  ];
   // By default first one is selected
   int selectedIndex = 0;
   @override
@@ -42,7 +51,6 @@ class _CategoriesState extends State<Categories> {
   Widget buildCategoriItem(int index) {
     return GestureDetector(
       onTap: () {
-        debugPrint('Line 36 in Category ' + index.toString());
         onChangeCategoryIndex(index);
         setState(() {
           selectedIndex = index;

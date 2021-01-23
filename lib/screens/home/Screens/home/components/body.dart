@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'categories.dart';
 import 'recipe_bundel_card.dart';
 import './Categories/NewspaperView.dart';
+import '../screens/book_home.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -47,9 +48,6 @@ class _BodyState extends State<Body> {
           Categories(
             onChangeCategoryIndex: changeCategoryIndex,
           ),
-
-          //debugPrint(index???) index ????
-          // switch ( selectedCategoryIndex) case 0 : . case 1:
           switchCategory(selectedCategoryIndex)
         ],
       ),
@@ -81,7 +79,10 @@ class CategoryAll extends StatelessWidget {
           itemBuilder: (context, index) => RecipeBundelCard(
             recipeBundle: recipeBundles[index],
             press: () {
-              debugPrint(index.toString());
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BookHome()),
+              );
             },
           ),
         ),

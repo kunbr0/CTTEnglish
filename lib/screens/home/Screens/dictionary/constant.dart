@@ -11,9 +11,7 @@ const cSearchBoxDecoration = InputDecoration(
   filled: true,
   fillColor: Color(0xFFEAEAEA),
   hintText: 'search here',
-  hintStyle: TextStyle(
-    color: Colors.black26,
-  ),
+  hintStyle: TextStyle(color: Colors.black26, fontWeight: FontWeight.bold),
   prefixIcon: Icon(
     Icons.search,
     size: 30.0,

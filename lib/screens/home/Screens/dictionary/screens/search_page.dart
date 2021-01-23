@@ -45,10 +45,10 @@ class _SearchPageState extends State<SearchPage> {
     String result = "";
     switch (cate) {
       case DictionaryCategories.EnEn:
-        result = "English-English";
+        result = "En-En Dictionary";
         break;
       case DictionaryCategories.EnVi:
-        result = "English-Vietnamese";
+        result = "En-Vi Dictionary";
         break;
       case DictionaryCategories.TranslateParagraph:
         result = "Translate Paragraph";
@@ -305,7 +305,7 @@ class _SearchPageState extends State<SearchPage> {
                               }),
                             );
 
-                            Future.delayed(const Duration(milliseconds: 5000),
+                            Future.delayed(const Duration(milliseconds: 4000),
                                 () {
                               // Here you can write your code
                               Navigator.pop(context);
@@ -409,10 +409,7 @@ class _SearchPageState extends State<SearchPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        _currentCategory ==
-                                DictionaryCategories.EnglishParaphrase
-                            ? "Sentence Paraphrase"
-                            : "Dictionary",
+                        generateTitle(_currentCategory),
                         style: cTitleStyle,
                       ),
                       SizedBox(
