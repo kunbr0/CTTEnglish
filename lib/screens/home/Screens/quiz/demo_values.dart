@@ -32,7 +32,7 @@ final List<Category> categories = [
   Category(11, "Test 3", icon: FontAwesomeIcons.android),
   Category(11, "Test 4", icon: FontAwesomeIcons.certificate),
   Category(11, "Test 5", icon: FontAwesomeIcons.photoVideo),
-  Category(11, "Test 6", icon: FontAwesomeIcons.adobe)
+  Category(11, "Test 6", icon: FontAwesomeIcons.bookOpen)
 ];
 
 final List<Question> demoQuestions = Question.fromData(

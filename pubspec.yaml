@@ -56,6 +56,8 @@ dependencies:
   youtube_player_flutter: ^7.0.0+7
   youtube_player_iframe: ^1.2.0+2
   google_fonts: ^1.1.1
+  scroll_to_index: ^1.0.6
+
 
 dev_dependencies:
   flutter_test:
