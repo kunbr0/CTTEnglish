@@ -29,7 +29,13 @@ class QuizHomePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple,
-          title: Text('English Test'),
+          title: Text(
+            "English Test",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24.0),
+          ),
           elevation: 0,
         ),
         body: Stack(
@@ -51,7 +57,7 @@ class QuizHomePage extends StatelessWidget {
                     child: Text(
                       "TOEIC",
                       style: TextStyle(
-                          color: Colors.white70,
+                          color: Colors.pink[300],
                           fontWeight: FontWeight.bold,
                           fontSize: 24.0),
                     ),
@@ -77,7 +83,7 @@ class QuizHomePage extends StatelessWidget {
                     child: Text(
                       "IELTS",
                       style: TextStyle(
-                          color: Colors.white70,
+                          color: Colors.pink[300],
                           fontWeight: FontWeight.bold,
                           fontSize: 24.0),
                     ),
@@ -103,7 +109,7 @@ class QuizHomePage extends StatelessWidget {
                     child: Text(
                       "BY TOPICS",
                       style: TextStyle(
-                          color: Colors.white70,
+                          color: Colors.pink[300],
                           fontWeight: FontWeight.bold,
                           fontSize: 24.0),
                     ),

@@ -12,10 +12,11 @@ import 'dart:convert' as convert;
 
 
 class VideoScreen extends StatefulWidget {
-  VideoScreen();
+  String videoUrl;
+  VideoScreen({this.videoUrl});
 
   @override
-  _VideoScreenState createState() => _VideoScreenState();
+  _VideoScreenState createState() => _VideoScreenState(videoUrl: videoUrl);
 }
 
 class _Caption {
@@ -27,12 +28,14 @@ class _Caption {
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-    
+    final videoUrl;
     final Color normalRow = Colors.white;
     final Color currentPlayingRow = Colors.yellow[100];
     final scrollDirection = Axis.vertical;
     final int intervalSyncTime = 200;
     final double minHeightOfAnswerModal = 200;
+
+    _VideoScreenState({this.videoUrl});
 
     Function _setStateModalBottom;
 
@@ -52,7 +55,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
     int _currentIndex = 0;
     _Caption _caption;
-    _VideoScreenState();
+    
 
     int getKTime(){
         return DateTime.now().microsecondsSinceEpoch;
@@ -68,7 +71,7 @@ class _VideoScreenState extends State<VideoScreen> {
         
         _youtubeController = YoutubePlayerController(
         initialVideoId: YoutubePlayer.convertUrlToId(
-            "3VTsIju1dLI"),
+            videoUrl),
         flags: YoutubePlayerFlags(
             autoPlay: true,
             mute: false,

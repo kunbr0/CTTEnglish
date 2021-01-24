@@ -150,7 +150,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                             data, _ReaderScreenState.redundantString, "")
                         .toLowerCase(),
                     style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: kTextColor))),
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -166,7 +166,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                       children: [
                         Text("Meaning: ",
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: kTextColor,
                             )),
@@ -188,7 +188,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                               return Text(
                                 removeSpecialCharater(snapshot.data.toString(),
                                     redundantString, ""),
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(fontSize: 18),
                               );
                             }
                             return Center(
@@ -216,7 +216,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                         children: [
                           Text("Example: ",
                               style: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: kTextColor)),
                           SizedBox(height: 10),
@@ -244,18 +244,34 @@ class _ReaderScreenState extends State<ReaderScreen> {
           SizedBox(height: 10),
           Text("Translate sentences",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: kTextColor,
               )),
           SizedBox(height: 20),
           RoundBoxDecoration(
-            child: Text(paragraph, style: TextStyle(fontSize: 17),),
+            
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("English: ",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: kTextColor,
+                  )),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text(paragraph, style: TextStyle(fontSize: 18),),
+                  ),
+                ]
+            )
           ),
           SizedBox(height: 20),
 
           RoundBoxDecoration(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Vietnamese: ",
                   style: TextStyle(
@@ -263,7 +279,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                     fontWeight: FontWeight.bold,
                     color: kTextColor,
                   )),
-              SizedBox(height: 10),
+              SizedBox(height: 2),
               FutureBuilder<Translation>(
                 future: () async {
                   final translator = GoogleTranslator();
@@ -281,7 +297,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   if (snapshot.hasData) {
                     uSleep(700);
                     return Html(data: snapshot.data.toString(), style: {
-                      "*": Style(fontSize: FontSize(20)),
+                      "*": Style(fontSize: FontSize(18)),
                     });
                   }
                   return Center(child: CircularProgressIndicator());

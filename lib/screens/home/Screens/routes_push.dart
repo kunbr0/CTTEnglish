@@ -7,7 +7,7 @@ import 'package:cttenglish/screens/home/Screens/youtube/main.dart';
 class RoutesGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-
+    debugPrint(args.toString());
     switch (settings.name) {
       // Reader
       case '/reader':
@@ -26,7 +26,7 @@ class RoutesGenerator {
         return CupertinoPageRoute(builder: (_) => QuizHomePage());
 
       case '/video_player':
-        return CupertinoPageRoute(builder: (_) => VideoScreen());
+        return CupertinoPageRoute(builder: (_) => VideoScreen(videoUrl: args,));
       // Default
       default:
         return _errorRoute();

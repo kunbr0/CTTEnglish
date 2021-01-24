@@ -38,8 +38,9 @@ class VideoPlayerScreen extends StatelessWidget {
 }
 
 class MainContainer extends StatelessWidget {
-  const MainContainer({
-    Key key,
+  String videoUrl;
+  MainContainer({
+    Key key, this.videoUrl = "https://www.youtube.com/watch?v=3VTsIju1dLI"
   }) : super(key: key);
 
   @override
@@ -61,6 +62,7 @@ class MainContainer extends StatelessWidget {
                                 TextField(
                                     cursorColor: Theme.of(context).primaryColor,
                                     style: TextStyle(color: Colors.black, fontSize: 18),
+                                    onChanged: (value){videoUrl = value;},
                                     decoration: InputDecoration(
                                         hintText: "Enter Url",
                                         hintStyle: TextStyle(color: Colors.black38, fontSize: 16),
@@ -77,7 +79,7 @@ class MainContainer extends StatelessWidget {
                             child: 
                                 FlatButton(onPressed: (){
                                     Navigator.of(context).pushNamed('/video_player',
-                                        arguments: {});
+                                        arguments: videoUrl);
                                 }, 
                                 child: Text("Search"))
                         ),
