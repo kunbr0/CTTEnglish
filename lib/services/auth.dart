@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cttenglish/models/user.dart';
 import 'package:cttenglish/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -29,16 +31,27 @@ class AuthService {
     }
   }
 
+  
   // sign in with email and password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       auth.UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       auth.User user = result.user;
-      return user;
+      return {"Status": 1, "Data": user};
     } catch (error) {
-      print(error.toString());
-      return null;
+      return {"Status": 0, "Data": error};
+    }
+  }
+
+  Future signUpWithEmailAndPassword(String email, String password) async {
+    try {
+      auth.UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      auth.User user = result.user;
+      return {"Status": 1, "Data": user};
+    } catch (error) {
+      return {"Status": 0, "Data": error};
     }
   }
 

@@ -7,7 +7,8 @@ import '../../../constants.dart';
 class RoundedPasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final bool disabled;
-  const RoundedPasswordField({Key key, this.onChanged, this.disabled = false})
+  final String placeholder;
+  const RoundedPasswordField({Key key, this.onChanged, this.disabled = false, this.placeholder = "Password"})
       : super(key: key);
 
   @override
@@ -19,7 +20,7 @@ class RoundedPasswordField extends StatelessWidget {
         cursorColor: kPrimaryColor,
         readOnly: disabled,
         decoration: InputDecoration(
-          hintText: "Password",
+          hintText: placeholder,
           icon: Icon(
             Icons.lock,
             color: disabled ? kDisabledColor : kPrimaryColor,

@@ -88,9 +88,14 @@ class _VideoScreenState extends State<VideoScreen> {
     }
     
     void youtubePlayerListener() {
+     
         
+        if(_isPlayerPlaying && _caption.timeData.length < 1){
+           debugPrint("Pauseeee");
+          _youtubeController.pause();
+        }
         if (_youtubeController.value.metaData.videoId.toString().length > 0 && _caption.statusCode == 0) {
-            _youtubeController.pause();
+            debugPrint("Begin get caption");
             setState(() {
                 _caption.statusCode = 1;
             });
