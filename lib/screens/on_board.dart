@@ -11,7 +11,7 @@ import './assets.dart';
 import 'package:cttenglish/widgets/cache_image.dart';
 
 class OnBoardScreen extends StatefulWidget {
-  BuildContext context;
+  final BuildContext context;
 
   OnBoardScreen({Key key, this.context}) : super(key: key);
 
@@ -22,6 +22,7 @@ class OnBoardScreen extends StatefulWidget {
 class _OnBoardScreenState extends State<OnBoardScreen> {
   SwiperController _controller = SwiperController();
   int _currentIndex = 0;
+  bool isLoaded = false;
   final List<String> titles = [
     "Welcome",
     "Awesome App",
@@ -85,66 +86,68 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Swiper(
-            loop: false,
-            index: _currentIndex,
-            onIndexChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            controller: _controller,
-            pagination: SwiperPagination(
-              builder: DotSwiperPaginationBuilder(
-                activeColor: Colors.red,
-                activeSize: 20.0,
+    final user = Provider.of<User>(context);
+    if (_currentIndex < 2 || !isLoaded) {
+      return Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Swiper(
+              loop: false,
+              index: _currentIndex,
+              onIndexChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              controller: _controller,
+              pagination: SwiperPagination(
+                builder: DotSwiperPaginationBuilder(
+                  activeColor: Colors.red,
+                  activeSize: 20.0,
+                ),
+              ),
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return IntroItem(
+                  title: titles[index],
+                  subtitle: subtitles[index],
+                  bg: colors[index],
+                  imageUrl: introIllus[index],
+                );
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: FlatButton(
+                child: Text("Skip"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return IntroItem(
-                title: titles[index],
-                subtitle: subtitles[index],
-                bg: colors[index],
-                imageUrl: introIllus[index],
-              );
-            },
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: FlatButton(
-              child: Text("Skip"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              icon:
-                  Icon(_currentIndex == 2 ? Icons.check : Icons.arrow_forward),
-              onPressed: () async {
-                if (_currentIndex != 2)
-                  _controller.next();
-                else {
-                  int screen = await getScreen();
-                  if (screen == 0) return;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              screen == 1 ? Authenticate() : Home()));
-                }
-              },
-            ),
-          )
-        ],
-      ),
-    );
+            Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                icon: Icon(
+                    _currentIndex == 2 ? Icons.check : Icons.arrow_forward),
+                onPressed: () async {
+                  if (_currentIndex != 2)
+                    _controller.next();
+                  else {
+                    setState(() {
+                      isLoaded = true;
+                    });
+                  }
+                },
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (user == null)
+      return Authenticate();
+    else
+      return Home();
   }
 }
 
