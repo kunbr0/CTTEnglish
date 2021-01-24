@@ -52,12 +52,12 @@ class _IeltsHomeState extends State<IeltsHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       body: ListView.builder(
           itemCount: testTitles.length,
           itemBuilder: (context, index) {
             return Container(
-              margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+              margin: const EdgeInsets.fromLTRB(0, 1, 0, 1),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(0.0)),
                   color: Colors.white),
@@ -65,35 +65,31 @@ class _IeltsHomeState extends State<IeltsHome> {
                 child: new InkWell(
                   onTap: () {
                     Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    TestDetailScreen()))
-                        .then((value) => setState(() {}));
-                    // ParapharaseExamplePage(
-                    //     phrase: phrase,
-                    //     examplesList: examplesList)))
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => TestDetailScreen(
+                                testUrl: testTitles[index].attributes[
+                                    "href"]))).then((value) => setState(() {}));
                   },
-                  child: new Container(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                          ),
-                          SizedBox(height: 10),
-                          Text(testTitles[index].attributes["title"],
-                              style: TextStyle(
-                                fontSize: 15,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis),
-                        ]),
+                  child: Card(
+                    elevation: 5,
+                    child: new Container(
+                      padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 15),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(testTitles[index].attributes["title"],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis),
+                            ),
+                          ]),
+                    ),
                   ),
                 ),
                 color: Colors.transparent,
