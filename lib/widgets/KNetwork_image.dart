@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class KNetworkImage extends StatelessWidget {
   final String image;
   final BoxFit fit;
-  final double width,height;
-  const KNetworkImage(this.image, {Key key,this.fit,this.height,this.width}) : super(key: key);
+  final double width, height;
+  const KNetworkImage(this.image, {Key key, this.fit, this.height, this.width})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
