@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'categories.dart';
 import 'recipe_bundel_card.dart';
 import './Categories/NewspaperView.dart';
-import '../screens/book_home.dart';
+import '../screens/ielts_home.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -81,7 +81,7 @@ class CategoryAll extends StatelessWidget {
             press: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => BookHome()),
+                MaterialPageRoute(builder: (context) => Text("All")),
               );
             },
           ),
@@ -111,7 +111,9 @@ class CategoryIelts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Day la page Ielts');
+    return Expanded(
+      child: IeltsHome(),
+    );
   }
 }
 
