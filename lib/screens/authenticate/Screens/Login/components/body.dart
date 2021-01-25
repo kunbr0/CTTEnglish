@@ -34,96 +34,92 @@ class _BodyState extends State<Body> {
         setState(() => loading = true);
         dynamic result =
             await _auth.signInWithEmailAndPassword(email, password);
-        if(result["Status"] == 0){
-          _showMyDialog("Login failed", "Please check your username or password!");
+        if (result["Status"] == 0) {
+          _showMyDialog(
+              "Login failed", "Please check your username or password!");
         }
+
         debugPrint(result["Data"].toString());
-        
+
         setState(() {
           loading = false;
         });
-        
       };
     }
   }
 
-  Future<void> _showMyDialog(String title,String errorDetails) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(title),
-        content: SingleChildScrollView(
-          child: Text(errorDetails)
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+  Future<void> _showMyDialog(String title, String errorDetails) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(child: Text(errorDetails)),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Background(
-      child: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "LOGIN",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: size.height * 0.03),
-              SvgPicture.asset(
-                "assets/icons/login.svg",
-                height: size.height * 0.35,
-              ),
-              SizedBox(height: size.height * 0.03),
-              RoundedInputField(
-                hintText: "Your Email",
-                onChanged: (value) {
-                  setState(() => email = value);
-                },
-                disabled: loading,
-              ),
-              RoundedPasswordField(
-                onChanged: (value) {
-                  setState(() => password = value);
-                },
-                disabled: loading,
-              ),
-              RoundedButton(
-                text: loading ? "Loading..." : "Login",
-                press: getPressAction(),
-                color: loading ? kDisabledColor : kPrimaryColor,
-              ),
-              
-
-              SizedBox(height: size.height * 0.03),
-              AlreadyHaveAnAccountCheck(
-                press: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return SignUpScreen();
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
+        child: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            "LOGIN",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-      )
-    );
+          SizedBox(height: size.height * 0.03),
+          SvgPicture.asset(
+            "assets/icons/login.svg",
+            height: size.height * 0.35,
+          ),
+          SizedBox(height: size.height * 0.03),
+          RoundedInputField(
+            hintText: "Your Email",
+            onChanged: (value) {
+              setState(() => email = value);
+            },
+            disabled: loading,
+          ),
+          RoundedPasswordField(
+            onChanged: (value) {
+              setState(() => password = value);
+            },
+            disabled: loading,
+          ),
+          RoundedButton(
+            text: loading ? "Loading..." : "Login",
+            press: getPressAction(),
+            color: loading ? kDisabledColor : kPrimaryColor,
+          ),
+          SizedBox(height: size.height * 0.03),
+          AlreadyHaveAnAccountCheck(
+            press: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SignUpScreen();
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ));
   }
 }

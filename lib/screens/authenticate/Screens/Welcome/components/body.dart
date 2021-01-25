@@ -21,7 +21,7 @@ class _BodyState extends State<Body> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "WELCOME TO EDU",
+              "WELCOME TO CTT ENGLISH",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: size.height * 0.05),
