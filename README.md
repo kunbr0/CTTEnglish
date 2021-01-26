@@ -26,11 +26,10 @@
 - **Ngôn ngữ sử dụng:** Dart, Flutter framework.
 - **Công cụ sử dụng:** Visual Studio Code, Android Studio.
 - **Backend:** Firebase.
-
 #
 
 Thành viên nhóm:
 
-- Tân Hữu Toàn
-- Tăng Khánh Chương
-- Ung Bảo Tiên
+- Tân Hữu Toàn              18520383          (https://www.facebook.com/KunBr0)
+- Tăng Khánh Chương         18520010          (https://www.facebook.com/khanh.chuong.583234)
+- Ung Bảo Tiên              18520168          (https://www.facebook.com/profile.php?id=100007637826603)
