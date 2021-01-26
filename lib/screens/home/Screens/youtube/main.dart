@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 
+
 class VideoScreen extends StatefulWidget {
   String videoUrl;
   VideoScreen({this.videoUrl});
@@ -19,11 +20,14 @@ class VideoScreen extends StatefulWidget {
   _VideoScreenState createState() => _VideoScreenState(videoUrl: videoUrl);
 }
 
+
+
 class _Caption {
   int statusCode = 0; // 0: Begin, 1: Getting, 2: Get successfully, 3: Get Fail
   List<String> captionData = [];
   List<String> captionWithMissingData = [];
   List<String> correctAnswers = [];
+  List<int> statusMissing = [];
   List<double> timeData = [];
 }
 
@@ -93,12 +97,13 @@ class _VideoScreenState extends State<VideoScreen> {
     void youtubePlayerListener() {
      
         
-        if(_isPlayerPlaying && _caption.timeData.length < 1){
-           debugPrint("Pauseeee");
+        if(_isPlayerPlaying && _caption.timeData.length < 1 && _youtubeController.value.metaData.videoId.toString().length > 0){
+           debugPrint("101: " + _youtubeController.value.metaData.videoId.toString());
           _youtubeController.pause();
         }
-        if (_youtubeController.value.metaData.videoId.toString().length > 0 && _caption.statusCode == 0) {
+        if ((_youtubeController.value.metaData.videoId.toString().length > 0) && _caption.statusCode == 0) {
             debugPrint("Begin get caption");
+            _youtubeController.pause();
             setState(() {
                 _caption.statusCode = 1;
             });
@@ -136,11 +141,18 @@ class _VideoScreenState extends State<VideoScreen> {
 
    
 
-    String getMissingWordSentences(String str){
+    String getMissingWordSentences(String str, int frequentMissing, int index){
+        if(index % frequentMissing != 0){
+          _caption.correctAnswers.add("None");
+          _caption.statusMissing.add(0);
+          return "";
+        }
         String result = "";
         var arrayOfWord = str.trim().split(" ");
         if(arrayOfWord.length == 1){
             _caption.correctAnswers.add(arrayOfWord[0]);
+            // 0 None, 1: Missing, 2: Answered, -1: Wrong
+            _caption.statusMissing.add(0);
             return arrayOfWord[0];
         }
         int randomIndex = kRandomNumber(0, arrayOfWord.length-1);
@@ -150,6 +162,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     i+= 1;
                 }
                 _caption.correctAnswers.add(arrayOfWord[i]);
+                _caption.statusMissing.add(1);
                 result += "_____ ";
             }
             else result += arrayOfWord[i] + " ";
@@ -159,10 +172,14 @@ class _VideoScreenState extends State<VideoScreen> {
     }
 
     void generateCaptionWithMissing(){
-        
-        _caption.captionWithMissingData =  _caption.captionData.map((e)=>getMissingWordSentences(e)).toList();
+        int frequentMissing = 2;
+        int i=0;
+        _caption.captionWithMissingData =  _caption.captionData.map((e){
+          i++;
+          return getMissingWordSentences(e,frequentMissing,i);
+        }).toList();
 
-        debugPrint(_caption.correctAnswers.toString());
+        debugPrint(_caption.statusMissing.toString());
     }
 
 
@@ -220,7 +237,7 @@ class _VideoScreenState extends State<VideoScreen> {
             if(currentPlayingTime > prevTime){
                 if(currentPlayingTime < nextTime){
                     if(crIndex != _currentIndex && isReadyForNextSync()){
-                        if(_playOption == 2) {
+                        if(_playOption == 2 && (_caption.statusMissing[crIndex-1] == 1 || _caption.statusMissing[crIndex-1] == -1)) {
                             _youtubeController.pause();
                             _showQuestionModal(_caption.captionWithMissingData[crIndex-1],crIndex-1);
                         }
@@ -241,7 +258,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 int currentPlayingTime = (_youtubeController.value.position.inSeconds);
                 int nextTime = _caption.timeData[crIndex+1].toInt();
                 if(currentPlayingTime > nextTime){
-                    if(_playOption == 2) {
+                    if(_playOption == 2 && (_caption.statusMissing[crIndex] == 1 || _caption.statusMissing[crIndex] == -1)) {
                         _youtubeController.pause();
                         _showQuestionModal(_caption.captionWithMissingData[crIndex],crIndex);
                     }
@@ -328,13 +345,21 @@ class _VideoScreenState extends State<VideoScreen> {
 
 
     void _closeModal(int nextSente) {
-        setState((){
-            _answerValue = "";
-        });
+        
         _isOpenBottomModal = false;
         _youtubeController.play();
         _lastSyncTime = getKTime();
-        updateCurrentIndex(nextSente);
+        debugPrint(_caption.statusMissing[nextSente-1].toString());
+        if(_caption.statusMissing[nextSente-1] == 2){
+          updateCurrentIndex(nextSente-1, isSeekToIndex: true);
+        } 
+        else {
+          _caption.statusMissing[nextSente-1] = -1;
+          updateCurrentIndex(nextSente);
+        }
+        setState((){
+            _answerValue = "";
+        });
     }
 
     Widget _answerButton(
@@ -343,9 +368,9 @@ class _VideoScreenState extends State<VideoScreen> {
     ){
         return Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.all(3),
+            margin: EdgeInsets.all(1),
             width: kWidth,
-            height: 30,
+            height: 35,
             color: Colors.green[50],
             child: RawMaterialButton(
             
@@ -370,7 +395,7 @@ class _VideoScreenState extends State<VideoScreen> {
         String keyboardPattern = "QWERTYUIOP-ASDFGHJKL'-ZXCVBNM,.";
 
         // = ( screen width - 10 ) / numOfKey - 2*marginLeftRight
-        double kWidth = (MediaQuery.of(context).size.width - 10) / 10 - 6;
+        double kWidth = (MediaQuery.of(context).size.width - 10) / 10 - 2;
         List<Widget> generateRowElm(String kContent){
             return kContent.split('').map<Widget>((e){
                 return _answerButton(e.toUpperCase(), (){
@@ -393,8 +418,6 @@ class _VideoScreenState extends State<VideoScreen> {
 
 
     Widget _modalBottomContent (String paragraph, String correctAnswerWithOtherChars){
-        
-
         return Column(children: [
                 Text(paragraph,
                     style: TextStyle(
@@ -454,11 +477,12 @@ class _VideoScreenState extends State<VideoScreen> {
                             builder: (BuildContext context, setState){
                                 _setStateModalBottom = setState;
                                 if(_answerValue.toUpperCase() == _caption.correctAnswers[currentSenteIndex].toUpperCase()){
+                                    _caption.statusMissing[currentSenteIndex] = 2;
                                     Navigator.pop(context);
                                 }
                                 return Container(
                                     padding: EdgeInsets.fromLTRB(5,10,5,0),
-                                    height:  sente.length < 48 ? 195 : 215,
+                                    height:  sente.length < 48 ? 215 : 235,
                                     child: SizedBox.expand(
                                         child: SingleChildScrollView(
                                             child: _modalBottomContent(sente, "QWERTYUIOP"),
@@ -489,7 +513,30 @@ class _VideoScreenState extends State<VideoScreen> {
        
     }
 
-    Widget _captionRow(AutoScrollController controller, int index, String caption, double time){
+    Widget _captionRow(AutoScrollController controller, int index, int playOption, double time){
+        Widget rowContent;
+        if(playOption == 1) rowContent = Text(_caption.captionData[index]);
+        else if(playOption == 2) {
+          if(_caption.statusMissing[index] == 0) rowContent = Text(_caption.captionData[index]);
+          else if(_caption.statusMissing[index] == 1) rowContent = Text(_caption.captionWithMissingData[index]);
+          else if(_caption.statusMissing[index] == 2 || _caption.statusMissing[index] == -1) {
+            var missingSenteSplitted = _caption.captionWithMissingData[index].indexOf("_____");
+            rowContent = RichText(
+              text: TextSpan(
+                style: TextStyle(color: Colors.black),
+                children: [
+                  TextSpan(text: _caption.captionWithMissingData[index].substring(0, missingSenteSplitted)),
+                  TextSpan(
+                    text: _caption.statusMissing[index] == 2 ? _caption.correctAnswers[index] : "_____",
+                    style: TextStyle(fontWeight: FontWeight.bold, color: _caption.statusMissing[index] == 2 ? Colors.green[700] : Colors.red[700]),
+                  ),
+                  TextSpan(text: _caption.captionWithMissingData[index].substring(missingSenteSplitted+5, _caption.captionWithMissingData[index].length-1)),
+                ]
+              )
+            );
+          }
+            
+        }
         return 
         AutoScrollTag(
               key: ValueKey(index),
@@ -511,7 +558,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     },
                     child: new Container(
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                        child: Text(caption),
+                        child: rowContent,
                     ),
                     ),
                     color: Colors.transparent,
@@ -532,10 +579,12 @@ class _VideoScreenState extends State<VideoScreen> {
                     controller: _captionScrollController,
                     padding: const EdgeInsets.all(0),
                     itemBuilder: (BuildContext context, int index){
+
                         return _captionRow(
                             _captionScrollController, 
                             index, 
-                            _playOption == 1 ? _caption.captionData[index] : _caption.captionWithMissingData[index], 
+                            //_playOption == 1 ? _caption.captionData[index] : _caption.captionWithMissingData[index], 
+                            _playOption,
                             _caption.timeData[index]
                         );
                     }

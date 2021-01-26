@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cttenglish/widgets/cache_image.dart';
 
 class Background extends StatelessWidget {
   final Widget child;
@@ -20,18 +21,12 @@ class Background extends StatelessWidget {
           Positioned(
             top: 0,
             left: 0,
-            child: Image.asset(
-              "assets/images/signup_top.png",
-              width: size.width * 0.35,
-            ),
+            child: CustomCacheImage(url: "assets/images/signup_top.png"),
           ),
           Positioned(
             bottom: 0,
             left: 0,
-            child: Image.asset(
-              "assets/images/main_bottom.png",
-              width: size.width * 0.25,
-            ),
+            child: CustomCacheImage(url: "assets/images/main_bottom.png"),
           ),
           child,
         ],

@@ -6,8 +6,7 @@ import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:flutter/material.dart';
-import 'package:highlight_text/highlight_text.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../services/NetworkHelper.dart';
@@ -380,16 +379,18 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Center(
-                    child: IconButton(
-                        icon: Icon(Icons.settings),
-                        iconSize: 35,
-                        color: Colors.white70,
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => _buildSettingDialog(context),
-                          );
-                        })))
+                  child: IconButton(
+                      icon: SvgPicture.asset(
+                        "assets/icons/settings.svg",
+                        width: 25,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => _buildSettingDialog(context),
+                        );
+                      }),
+                ))
           ],
         ),
         body: _currentCategory != DictionaryCategories.TranslateParagraph

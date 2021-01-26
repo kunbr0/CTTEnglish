@@ -5,7 +5,6 @@ import 'package:cttenglish/services/auth.dart';
 import 'info.dart';
 import 'profile_menu_item.dart';
 
-
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,6 @@ class Body extends StatelessWidget {
             title: "Saved words",
             press: () {
               Navigator.of(context).pushNamed('/quiz_app');
-
             },
           ),
           ProfileMenuItem(
@@ -39,9 +37,9 @@ class Body extends StatelessWidget {
           ProfileMenuItem(
             iconSrc: "assets/icons/info.svg",
             title: "Logout",
-            press:  () async {
-                      await AuthService.signOut();
-                    },
+            press: () async {
+              await AuthService.signOut();
+            },
           ),
         ],
       ),
