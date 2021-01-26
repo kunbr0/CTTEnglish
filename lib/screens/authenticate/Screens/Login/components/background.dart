@@ -17,44 +17,6 @@ class Background extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Positioned(
-            top: 0,
-            left: 0,
-            child: CachedNetworkImage(
-              // height: 200,
-              // width: 1000,
-              imageUrl: "assets/images/main_top.png",
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: CachedNetworkImage(
-              // height: 200,
-              // width: 1000,
-              imageUrl: "assets/images/login_bottom.png",
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            ),
-          ),
           child,
         ],
       ),

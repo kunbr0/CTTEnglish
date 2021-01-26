@@ -1,3 +1,4 @@
+import 'package:cttenglish/constants.dart';
 /**
  * Author: Damodar Lohani
  * profile: https://github.com/lohanidamodar
@@ -29,12 +30,11 @@ class QuizHomePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple,
-          title: Text(
-            "English Test",
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24.0),
+          title: Center(
+            child: Text(
+              "English Test",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           elevation: 0,
         ),
@@ -43,7 +43,7 @@ class QuizHomePage extends StatelessWidget {
             ClipPath(
               clipper: WaveClipperTwo(),
               child: Container(
-                decoration: BoxDecoration(color: Colors.deepPurple),
+                decoration: BoxDecoration(color: kPrimaryColor),
                 height: 200,
               ),
             ),

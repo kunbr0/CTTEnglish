@@ -8,7 +8,6 @@ import 'package:cttenglish/screens/home/home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import './assets.dart';
-import 'package:cttenglish/widgets/cache_image.dart';
 
 class OnBoardScreen extends StatefulWidget {
   final BuildContext context;
@@ -25,13 +24,13 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
   bool isLoaded = false;
   final List<String> titles = [
     "Welcome",
-    "Awesome App",
-    "Flutter App",
+    "All in one",
+    "CTT English",
   ];
   final List<String> subtitles = [
-    "Welcome to this awesome intro screen app.",
-    "This is an awesome app, of intro screen design",
-    "Flutter is awesome for app development"
+    "Welcome to our app",
+    "We integrate all features into one: Dictionary, Quiz, Newspaper....",
+    "Best app for learning english"
   ];
   final List<Color> colors = [
     Colors.green.shade300,
@@ -115,15 +114,6 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                   imageUrl: introIllus[index],
                 );
               },
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: FlatButton(
-                child: Text("Skip"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
             ),
             Align(
               alignment: Alignment.bottomRight,

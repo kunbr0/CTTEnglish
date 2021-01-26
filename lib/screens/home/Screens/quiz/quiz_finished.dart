@@ -1,8 +1,3 @@
-/**
- * Author: Damodar Lohani
- * profile: https://github.com/lohanidamodar
-  */
-
 import 'package:flutter/material.dart';
 import 'question.dart';
 import 'check_answers.dart';

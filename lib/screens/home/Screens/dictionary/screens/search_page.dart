@@ -369,11 +369,11 @@ class _SearchPageState extends State<SearchPage> {
           title: Text(
             "Dictionary Screen",
             style: TextStyle(
-                fontFamily: 'Arial', fontSize: 20, color: Colors.white70),
+                fontFamily: 'Arial', fontSize: 20, color: Colors.white),
           ),
           leading: Icon(
             Icons.menu,
-            color: Colors.white70,
+            color: Colors.white,
           ),
           actions: [
             Padding(
