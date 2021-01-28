@@ -27,10 +27,10 @@
 - **Công cụ sử dụng:** Visual Studio Code, Android Studio.
 - **Backend:** Firebase.
 
-# Google Play: 
+## Google Play: 
 - https://play.google.com/store/apps/details?id=com.kunbr0.cttenglish&fbclid=IwAR3yyr1PgLx9QKLlSpcrlj9ZWn8cTKZ7tRcsKGOHtbUVNnd4pwNrjQCXU44
 
-# Thành viên nhóm:
+## Thành viên nhóm:
 
 - Tân Hữu Toàn              18520383          (https://www.facebook.com/KunBr0)
 - Tăng Khánh Chương         18520010          (https://www.facebook.com/khanh.chuong.583234)
