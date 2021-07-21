@@ -1,37 +1,37 @@
-# ỨNG DỤNG HỌC TIẾNG ANH TRÊN THIẾT BỊ DI ĐỘNG
+# ENGLISH LEARNING APPS ON MOBILE DEVICES
 
-## Giới thiệu
+## Introduction
 
-- Hỗ trợ người sử dụng smartphone có mong muốn học tiếng Anh một cách thuận tiện, mọi lúc mọi nơi. Tạo cho người sử dụng cảm giác thích thú, không nhàm chán rập khuôn như các cách học truyền thống và cho người sử dụng sáng tạo theo cách riêng, theo nhu cầu học tập cá nhân của mỗi người.
-- Sử dụng trên thiết bị di động hệ điều hành Android và IOS.
-- Tất cả mọi người có nhu cầu học tiếng Anh đều có thể sử dụng
+- Support smartphone users who want to learn English conveniently, anytime, anywhere. Give users a sense of enjoyment, not boring and stereotyped as traditional ways of learning and for users to be creative in their own way, according to each person's individual learning needs.
+- Use on Android and IOS mobile devices.
+- Anyone who wants to learn English can use it.
 
-## Chức năng
+## Functions
 
-- **Đọc báo tiếng Anh:** hỗ trợ phần dịch tiếng Việt
-- **Dịch:**
-  - dịch từ: giải thích nghĩa bằng tiếng Anh, dịch từ Anh sang Việt
-  - dịch đoạn văn: dịch từ Anh sang Việt
-  - sử dụng giọng nói để tra cứu
-- **Tra cách diễn đạt:** cho ví dụ cách sử dụng minh họa về từ hoặc cụm từ tra cứu
-- **Kiểm tra trình độ Anh văn:** cho phép người dùng làm bài kiểm tra chọn số câu hỏi và mức độ đề.Sau khi hoàn thành bài kiểm tra, chương trình sẽ kiểm tra đáp án, cho biết số câu đúng và bài giải.
-- **Luyện nghe:** cho phép người dùng chọn bất kì video trên Youtube có phụ đề tiếng Anh. Có 2 chế độ: nghe hoặc luyện tập.
-  - Nghe: tập trung vào phụ đề, có thể nghe bất kì câu nào khi chạm vào câu đó
-  - Luyện tập: Mỗi dòng phụ đề sẽ khuyết một từ và thay thế bằng một đường gạch đen, cho phép người dùng điền vào chỗ bị khuyết từ mà người dùng nghe được.
-- **Luyện thi ielts:** Các bài thi ielts mẫu với đáp án đầy đủ cho cả 4 phần: nghe, đọc, nói và viết.
-- **Profile:** Hiển thị thông tin cá nhân người dùng.
+- **Reading English newspapers:** support Vietnamese translation
+- **Text Translate:**
+  - Translate words: explain the meaning in English, translate from English to Vietnamese.
+  - Translate paragraphs: translate paragraphs from English to Vietnamese.
+  - Use voice to lookup.
+- **Searching sentences:** give examples of how to use the word or phrase to look up.
+- **English proficiency test:** allows users to take the test to choose the number of questions and the level of the question. After completing the test, the program will check the answer, indicating the number of correct questions and the solution.
+- **Listening practice:** allows users to select any video on Youtube with English subtitles. There are 2 modes: listen or practice.
+  - Listening: focus on subtitles, can listen to any sentence when touching it.
+  - Practicing: each subtitle line will have a word missing and replaced with a black line, allowing the user to fill in the missing word that the user hears.
+- **Practice IELTS:** sample ielts tests with complete answers for all 4 sections: listening, reading, speaking and writing.
+- **Profile:** display user personal information.
 
-## Công nghệ
+## Technologies
 
-- **Ngôn ngữ sử dụng:** Dart, Flutter framework.
-- **Công cụ sử dụng:** Visual Studio Code, Android Studio.
+- **Languages:** Dart, Flutter framework.
+- **Tools:** Visual Studio Code, Android Studio.
 - **Backend:** Firebase.
 
-## Google Play: 
-- https://play.google.com/store/apps/details?id=com.kunbr0.cttenglish&fbclid=IwAR3yyr1PgLx9QKLlSpcrlj9ZWn8cTKZ7tRcsKGOHtbUVNnd4pwNrjQCXU44
+## Google Play Link: 
+- https://play.google.com/store/apps/details?id=com.kunbr0.cttenglish
 
 ## Thành viên nhóm:
 
-- Tân Hữu Toàn              18520383          (https://www.facebook.com/KunBr0)
-- Tăng Khánh Chương         18520010          (https://www.facebook.com/khanh.chuong.583234)
-- Ung Bảo Tiên              18520168          (https://www.facebook.com/profile.php?id=100007637826603)
+- Tan Huu Toan              18520383          (https://www.facebook.com/KunBr0)
+- Tang Khanh Chuong         18520010          (https://www.facebook.com/khanh.chuong.583234)
+- Ung Bao Tien              18520168          (https://www.facebook.com/profile.php?id=100007637826603)
